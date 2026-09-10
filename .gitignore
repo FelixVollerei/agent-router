@@ -1,0 +1,16 @@
+__pycache__/
+*.egg-info/
+.venv/
+.router-dev/
+.router-state/
+*.sqlite3*
+.env
+.env.*
+!.env.example
+*.dpapi
+session.json
+settings.json
+dist/
+build/
+.pytest_cache/
+scripts/launch-router.vbs

@@ -1,0 +1,31 @@
+{
+  "request": "把这100个变量名按照明确规则修改：OLD_ 前缀替换为 NEW_，保留变量值。",
+  "goal": "Rename variable prefixes in variables.json with no value changes",
+  "profile": {
+    "task_type": "batch_edit",
+    "domain": "plant_scada",
+    "requirement_clarity": 5,
+    "automatic_verifiability": 5,
+    "human_verification_cost": 1,
+    "failure_blast_radius": 1,
+    "tool_complexity": 1,
+    "repo_scope": 1,
+    "domain_uncertainty": 0,
+    "root_cause_uncertainty": 0,
+    "reversibility": 5,
+    "deadline_urgency": 1,
+    "existing_reference_implementation": true,
+    "known_acceptance_criteria": true,
+    "evidence": {
+      "acceptance": "check.py validates the exact 100 keys and values",
+      "reversibility": "Isolated copy and original hashes are retained"
+    }
+  },
+  "context": ["variables.json contains 100 integer entries OLD_000 through OLD_099"],
+  "constraints": ["Preserve all integer values", "Do not modify check.py"],
+  "acceptance_criteria": ["Exactly 100 NEW_000..NEW_099 keys with matching integer values"],
+  "allowed_files": ["variables.json"],
+  "forbidden_files": ["check.py"],
+  "expected_files": ["variables.json"],
+  "checks": ["demo_check"]
+}

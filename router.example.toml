@@ -1,0 +1,49 @@
+[router]
+# Must be outside the repository passed to run. Relative to this config file.
+state_dir = "../Agent Router Runs"
+auto_usage = true
+codex_budget_remaining = 50
+codex_limit_id = "codex"
+max_attempts = 5
+max_total_runtime = 2400
+analyzer_provider = "deepseek"
+analyzer_model = "deepseek-v4-pro"
+analyzer_timeout = 30
+history_min_samples = 5
+# These are policy utility weights, not dollar prices.
+time_weight = 0.2
+human_weight = 3
+failure_weight = 15
+
+[providers.deepseek]
+kind = "managed_chat"
+base_url = "https://api.deepseek.com"
+api_key_env = "DEEPSEEK_API_KEY"
+max_output_tokens = 4096
+thinking = "disabled"
+
+[providers.codex]
+kind = "codex_cli"
+command = "codex"
+windows_sandbox = "elevated"
+
+# Trusted host-defined argv; no shell interpolation. Check scripts run in candidate workspace.
+[commands]
+unit = ["python", "-B", "-m", "unittest", "discover", "-s", "tests", "-v"]
+demo_check = ["python", "-B", "check.py"]
+
+[budgets.deepseek]
+max_debug_loops = 2
+max_failed_tests = 2
+max_no_progress_tool_calls = 10
+max_exploration_steps = 30
+max_runtime = 600
+max_context_growth = 64000
+
+[budgets.performance_debugging]
+max_debug_loops = 2
+max_exploration_steps = 25
+
+# Optional [[models]] replaces the full catalog. See docs/ARCHITECTURE.md.
+# Defaults: deepseek / sol_medium / sol_high / astra / astra_ultra.
+# DeepSeek V4 Pro is the requested logical default; verify its API ID with your account.

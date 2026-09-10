@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "engineering-model-router"
+version = "0.3.0"
+description = "Cheapest safe model first, evidence-driven engineering orchestration"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+model-router = "model_router.cli:main"
+model-router-desktop = "model_router.desktop:main"
+
+[tool.setuptools.packages.find]
+include = ["model_router*"]
+
+[tool.setuptools.package-data]
+model_router = ["web/*.html", "web/*.css", "web/*.js", "web/*.svg", "web/*.ico"]

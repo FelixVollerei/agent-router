@@ -1,0 +1,27 @@
+{
+  "request": "Plant SCADA项目加载从20秒变90秒，原因未知。客户工程被阻塞，8小时内要定位。",
+  "goal": "Identify and demonstrate the cause of the loading regression",
+  "profile": {
+    "task_type": "performance_debugging",
+    "domain": "plant_scada",
+    "requirement_clarity": 4,
+    "automatic_verifiability": 1,
+    "human_verification_cost": 4,
+    "failure_blast_radius": 4,
+    "tool_complexity": 4,
+    "repo_scope": 4,
+    "domain_uncertainty": 4,
+    "root_cause_uncertainty": 5,
+    "reversibility": 3,
+    "deadline_urgency": 3,
+    "production": true,
+    "production_blocker": true,
+    "unresolved_questions": ["Which runtime/build?", "What changed between 20s and 90s?", "Can baseline timings be reproduced?"]
+  },
+  "context": ["No reliable automated loading oracle is available yet"],
+  "acceptance_criteria": ["Reproduce baseline and regression; validate proposed fix by opening the actual project"],
+  "allowed_files": ["diagnostics/*"],
+  "forbidden_files": ["production/*"],
+  "checks": [],
+  "manual_verification": true
+}
