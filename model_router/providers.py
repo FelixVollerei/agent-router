@@ -153,10 +153,12 @@ class ManagedChatProvider:
                         if not isinstance(content, str) or len(content.encode()) > 100_000:
                             raise ValueError("Write exceeds per-file limit")
                         path = safe_path(work, relative)
+                        existed = path.exists()
                         path.parent.mkdir(parents=True, exist_ok=True)
                         path.write_text(content, encoding="utf-8")
                         result = "written"
-                        emit(Event("file_write", {"path": relative, "signature": "write:" + relative, "evidence_hash": digest(content)}))
+                        emit(Event("file_write", {"path": relative, "change": "modified" if existed else "created",
+                                                  "signature": "write:" + relative, "evidence_hash": digest(content)}))
                     elif name == "run_check":
                         check = args["name"]
                         if check not in task.checks or check not in self.config.commands:
@@ -211,7 +213,8 @@ class CodexCLIProvider:
                 if previous_files.get(relative) != current.get(relative):
                     if review or not permitted(relative, task.allowed_files, task.forbidden_files):
                         raise ValueError(f"Executor changed forbidden file: {relative}")
-                    emit(Event("file_write", {"path": relative, "signature": "write:" + relative,
+                    change = "deleted" if relative not in current else "created" if relative not in previous_files else "modified"
+                    emit(Event("file_write", {"path": relative, "change": change, "signature": "write:" + relative,
                                               "evidence_hash": current.get(relative, "deleted:" + relative)}))
             previous_files = current
         try:

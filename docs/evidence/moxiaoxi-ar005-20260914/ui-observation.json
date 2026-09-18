@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-09-14T09:32:17.734541+00:00",
+  "kind": "browser_observation_of_saved_real_codex_job",
+  "method": "Codex in-app browser, accessibility actions and returned live tree",
+  "data": "isolated generated probe data; main chat FakeModels; no production data",
+  "observations": [
+    "Main interface remains voice-first; microphone not started",
+    "Dynamic panel displayed completed real agent-router task with Router verified and candidate unapplied",
+    "Candidate list displayed changes.diff, result.json, verification-1.json, verified-hashes.json and work files with SHA256",
+    "Selecting Agent Router displayed registered demo, value.txt/check.py read scope, check name, gpt-5.6-sol medium choice",
+    "Upload checkbox initially unchecked; write scope value.txt and 120 second/1 attempt/2 call controls visible",
+    "Opening the saved conversation changed task label from other conversation to current conversation"
+  ],
+  "not_performed": [
+    "No new task submitted through browser",
+    "No browser file download",
+    "No microphone or Android interactions"
+  ],
+  "source_matches_real_probe": true,
+  "cleanup": "Browser tab closed; bounded preview shutdown requested using its own stop file"
+}

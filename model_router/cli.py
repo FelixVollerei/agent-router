@@ -44,6 +44,13 @@ def main(argv=None):
     sub.add_parser("doctor", help="Read-only local provider/config capability report")
     sub.add_parser("usage", help="Read Codex app-server quota; never consumes a reset")
     sub.add_parser("history", help="Export abstract experience rows")
+    p = sub.add_parser("catalog", help="Configured model catalog; discovery is opt-in")
+    p.add_argument("--discover", metavar="PROVIDER")
+    p = sub.add_parser("research", help="Read explicitly named public sources, no execution")
+    p.add_argument("--query", action="append", default=[])
+    p.add_argument("--url", action="append", default=[])
+    p = sub.add_parser("serve", help="Private router.jobs/v1 JSON-RPC stdio service")
+    p.add_argument("--client-id", required=True)
     p = sub.add_parser("promote", help="Explicitly copy verified result to unchanged original workspace")
     p.add_argument("run_dir", type=Path)
     args = parser.parse_args(argv)
@@ -51,7 +58,16 @@ def main(argv=None):
         cfg = Config.load(args.config)
         if args.state_dir:
             cfg.state_dir = args.state_dir.resolve()
-        if args.command == "analyze":
+        if args.command == "serve":
+            from .jobs import serve
+            serve(cfg, args.client_id)
+        elif args.command == "catalog":
+            from .catalog import configured_catalog, discover
+            output(discover(cfg, args.discover) if args.discover else configured_catalog(cfg))
+        elif args.command == "research":
+            from .research import Research
+            output(Research(cfg).collect({"web_research": True, "public_queries": args.query, "public_urls": args.url}))
+        elif args.command == "analyze":
             task = Analyzer(cfg).analyze(args.request, args.repo.resolve(), not args.offline)
             if args.out:
                 args.out.write_text(json.dumps(asdict(task), ensure_ascii=False, indent=2), encoding="utf-8")

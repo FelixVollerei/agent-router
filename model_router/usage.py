@@ -44,3 +44,50 @@ def read_usage(command="codex", timeout=8):
         return response(2)
     finally:
         child.close()
+
+
+def read_models(command="codex", timeout=15, cancel_event=None):
+    from .monitor import RunCancelled
+    child = LineProcess([command, "app-server", "--listen", "stdio://"])
+    start = time.monotonic()
+    def response(identifier):
+        while time.monotonic() - start < timeout:
+            if cancel_event is not None and cancel_event.is_set():
+                raise RunCancelled("Catalog read cancelled")
+            item = child.poll(.05)
+            if item and item[0] == "overflow":
+                raise ValueError("Model catalog frame limit")
+            if item and item[0] == "stdout":
+                data = json.loads(item[1])
+                if data.get("id") == identifier:
+                    if "error" in data:
+                        raise RuntimeError("Codex model/list failed")
+                    return data["result"]
+            if child.finished():
+                raise RuntimeError("Codex app server exited")
+        raise TimeoutError("Codex model/list timed out")
+    try:
+        child.send({"id": 1, "method": "initialize", "params": {"clientInfo": {"name": "engineering_model_router", "version": "0.4.0"}}})
+        response(1)
+        child.send({"method": "initialized"})
+        rows, cursor, seen = [], None, set()
+        for identifier in range(2, 22):
+            params = {"limit": 100, "includeHidden": False}
+            if cursor is not None:
+                params["cursor"] = cursor
+            child.send({"id": identifier, "method": "model/list", "params": params})
+            page = response(identifier)
+            if not isinstance(page.get("data"), list):
+                raise ValueError("Invalid model/list response")
+            rows.extend(page["data"])
+            if len(rows) > 1000:
+                raise ValueError("Model catalog size limit")
+            cursor = page.get("nextCursor")
+            if cursor is None:
+                return rows
+            if not isinstance(cursor, str) or cursor in seen:
+                raise ValueError("Invalid/repeated model catalog cursor")
+            seen.add(cursor)
+        raise ValueError("Model catalog page limit")
+    finally:
+        child.close()

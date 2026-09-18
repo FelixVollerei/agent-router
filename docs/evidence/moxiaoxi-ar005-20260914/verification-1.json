@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "check",
+      "passed": true,
+      "argv": [
+        "D:/Codes/Python_Codes/SysManager/MoXiaoxi/.venv/Scripts/python.exe",
+        "-B",
+        "check.py"
+      ],
+      "returncode": 0,
+      "output": "",
+      "error": null,
+      "runtime": 0.125
+    },
+    {
+      "name": "scope",
+      "passed": true,
+      "unexpected_files": []
+    },
+    {
+      "name": "reserved_artifacts",
+      "passed": true,
+      "files": []
+    },
+    {
+      "name": "expected_changes",
+      "passed": true,
+      "missing": []
+    }
+  ],
+  "changed_files": [
+    "value.txt"
+  ]
+}

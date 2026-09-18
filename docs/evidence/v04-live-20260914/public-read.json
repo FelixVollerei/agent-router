@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "sources": [],
+  "errors": [
+    {
+      "url": "https://example.com",
+      "reason": "PermissionError"
+    }
+  ],
+  "requests": 1,
+  "bytes": 0
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "benchmark": "FORMAT EXAMPLE ONLY", "version": "replace-with-version", "task_type": "feature",
+    "metric": "pass_percent", "score": 50, "min": 0, "max": 100, "higher_is_better": true,
+    "provider": "replace-with-provider", "model": "replace-with-exact-model", "reasoning": "",
+    "source_url": "https://example.com/replace-with-real-source",
+    "evaluated_at": "2026-09-14T00:00:00Z", "reviewed": false
+  }
+]

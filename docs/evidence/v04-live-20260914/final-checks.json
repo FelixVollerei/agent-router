@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-09-14T08:09:51.942942+00:00",
+  "final_code_hashes_match_test_run": true,
+  "mobile_review_source_files_unchanged": [
+    "android/app/src/main/java/dev/moxiaoxi/remote/MainActivity.kt",
+    "android/app/src/main/java/dev/moxiaoxi/remote/LocalSpeech.kt",
+    "android/app/src/main/java/dev/moxiaoxi/remote/RemoteController.kt",
+    "android/app/src/main/java/dev/moxiaoxi/remote/CallFlow.kt",
+    "moxiaoxi/remote.py",
+    "moxiaoxi/config.py",
+    "moxiaoxi/static/app.js",
+    "tools/run_remote_dev.py",
+    "tools/p14_host.ps1"
+  ],
+  "document_local_link_targets_missing": [],
+  "documents_sha256": {
+    "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter\\README.md": "1a5fe6d538e93e3b31b949049372f04b1d15040a14591527046efa3c8d3aab86",
+    "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter\\docs\\V1.md": "89bbd37947dda79ff8ea769ab36c4e18e8ece3803477f77ba3a42172f7e00ac5",
+    "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter\\docs\\ROADMAP.md": "7a1d933d31ed5b8f50a882e65660e856608f152ef43672ef3256d95e748ec379",
+    "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter\\docs\\ARCHITECTURE.md": "c6b85a3ac473e599d648886cd53ea39886c330886939641c717c8e95e861a23f",
+    "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter\\docs\\VALIDATION.md": "fe5967a540441b94ebf3af7cddc97a7c2b82c5fe66078cc5daeb9cabd11378c0",
+    "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter\\docs\\DESKTOP.md": "a656527366262eebb9b064056e232b72c55d49ba3542daa83acf66817c58a45a",
+    "D:\\Codes\\Python_Codes\\SysManager\\MoXiaoxi\\docs\\ARCHITECTURE.md": "7241e6f14426e11e949c4780b66d6f9f51fabdd23b1a9194b65c841f672c23c2",
+    "D:\\Codes\\Python_Codes\\SysManager\\MoXiaoxi\\docs\\FUTURE-TODO.md": "d617000976ec057f78bbe3d3c0beeff1671f9d4dd99872a0ce9bb8f9c56313dc",
+    "D:\\Codes\\Python_Codes\\SysManager\\MoXiaoxi\\docs\\overview\\03-NEXT-TODO.md": "77ebb4bb220cd7ffa96c5b9796e07e1f33c240aebaeef458435cfc690b67c67a",
+    "D:\\Codes\\Python_Codes\\SysManager\\MoXiaoxi\\docs\\overview\\README.md": "cf165fdf8ef7dcbc74915358fbd263d79138eff772eaed5a7e5027a6537434fb",
+    "D:\\Codes\\Python_Codes\\SysManager\\MoXiaoxi\\docs\\acceptance\\P14.md": "b1b6af4bab04701675d96d25894b4db36e2499f1b08690426145937aea3f4652"
+  }
+}

@@ -1,5 +1,38 @@
 # 验证与已知边界
 
+## v0.4.1 / 墨小汐PC接入（2026-09-14）
+
+在v0.4.0方案v1上增补只读`job.lookup(client_task_id)`。它以启动client身份隔离，只查询已持久接纳的任务，不提交、不重派、不消耗新预算，解决宿主丢失job.submit响应后没有job ID的问题。旧方法与协议版本保留。墨小汐已实现独立工程profile、父预算/身份持久化、AgentRouterBackend、stdio client、本机授权范围和候选界面；不宣称DSH标准兼容。
+
+Router完整回归**73项通过**，17.891秒，JavaScript语法、Python AST、diff空白和HTML引用检查通过；[原始输出](evidence/v041-20260914-162244/check-0.txt)、[当次命令/源码指纹](evidence/v041-20260914-162244/results.json)。仍以v0.3.0提交为基线、未提交工作树为受测版本。新增测试覆盖父任务查询的client隔离、缺失和无执行副作用；原v0.4.0证据保留在下方。
+
+真实墨小汐→Gate/TaskRuntime→Router→Codex→独立检查→同会话候选往返已通过一个生成工程样本；[双端结果和源码hash](evidence/moxiaoxi-ar005-20260914/results.json)、[检查报告](evidence/moxiaoxi-ar005-20260914/verification-1.json)、[页面观察](evidence/moxiaoxi-ar005-20260914/ui-observation.json)。该实验主对话使用夹具、工程provider为真实Codex；执行目录与日常库隔离。墨小汐完整回归、新增跨端故障用例、样本数值及限制由[墨小汐P7增补](D:/Codes/Python_Codes/SysManager/MoXiaoxi/docs/acceptance/P07.md#ar-005-工程任务接入增补)维护。
+
+源文件先在授权开发副本验证，再逐文件核对v0.4.0原项目hash后回写。原项目同步证据见[回写指纹](evidence/v041-writeback-20260914.json)。本次没有提交/发布或重启原后台服务。
+
+尚未完成：Brave真实搜索、新研究链路的真实两轮LLM预研、工程质量/费用校准、长时负载、Codex严格包外读隔离、完整远端计费/停止证明、DSH标准兼容。墨小汐Android三项体验修复继续延期。一个生成样本不证明任意真实仓库均可用；自动promote仍不在宿主API中。下方v0.4.0和v0.3章节描述各自当时的状态，不覆盖本节最新接入结论。
+
+## v0.4.0 / 方案v1（2026-09-14）
+
+本轮以v0.3.0 / `7c487c8d6e2638d646f806815395410f76b2e1b1`为提交基线，实际改动尚未提交或发布。可复核的当前代码身份见[最终测试源码SHA256与命令](evidence/v04-20260914-150452/results.json)，不是仅用HEAD代表工作树。
+
+已实现：自定义模型/供应商目录与按需发现；显式公开资料抓取/可选Brave搜索；经审阅、同任务/版本/量纲评测的有界排序；桌面入口；`router.jobs/v1`持久接纳、事件、预算、取消、成果与Python client。保留旧审阅发布与执行核心。墨小汐仅接口合同定版，backend/profile尚未接通。
+
+| 验证 | 结果与证据 |
+| --- | --- |
+| 完整回归 | **72项全部通过**（原53＋新增19），18.468秒；[原始输出](evidence/v04-20260914-150452/check-0.txt)。包括Windows DPAPI、真实隔离worker、检查脚本篡改前置拒绝、review共享预算、总时限及子孙进程停止 |
+| 合同与故障 | 拒绝预算/范围/模型扩大、幂等冲突、单拥有者/执行槽、事件有序分页、版本/字段错误、重启unknown隔离、候选成果hash篡改、原工程及非授权文件不被写回，均由上述确定性测试覆盖 |
+| 静态检查 | Python AST、JavaScript语法、diff空白检查通过；HTML无重复ID、JS无缺失静态ID；测试期间源码hash未变，见results.json |
+| 真实只读Codex目录 | 正式app-server `model/list`读到6个模型及各自reasoning档；[原始响应](evidence/v04-live-20260914/discovery-codex-user.json)。不推断推理成功、工具能力或剩余额度 |
+| 真实公开页面读取 | `research --url https://example.com`获得559字节并保存采集时间/hash；[原始响应](evidence/v04-live-20260914/public-read-user.json)。不调用回答模型 |
+| 浏览器交互 | 隔离临时状态、无模型密钥、自动额度关闭；确认模型/评测表单可打开保存、公开研究默认关闭且输入可见、无密钥生成可编辑基础模板并停在审阅。测试服务已退出；[观察记录](evidence/v04-live-20260914/ui-observation.json)；未运行发布或真实工程 |
+
+失败和修正保留：初次旧回归在离线沙箱下DPAPI失败（52/53），同一测试在真实Windows用户下通过；第一轮新增测试发现服务锁重复打开读取与fixture后代PID定位问题，修正后通过。初次实机只读探针在沙箱得到PermissionError/Codex进程退出，按权限流程在当前Windows用户下重跑成功，[失败原始响应](evidence/v04-live-20260914/public-read.json)、[Codex失败](evidence/v04-live-20260914/discovery-codex.json)保留。未把环境失败算作通过，也未降低测试标准。较早完整回归记录保留在[evidence目录](evidence/)，最终结论以上方指纹为准。
+
+本版未验：Brave真实账户搜索、兼容`/models`真实账户的新路径、新研究链路的真实LLM两轮预研、新宿主API的真实模型工程执行、墨小汐全链路、质量/费用校准、长时负载及DSH标准兼容。历史真实DeepSeek/Codex结果仍保留下面，不能替代新链路验收。
+
+边界：宿主执行首版仅支持Windows，Job Object无法建立则拒绝；`max_provider_calls`/`provider_calls`只计顶层执行器调用，包含review，不是内部API次数或token硬上限。只读包不证明Codex无法读取包外文件，仍需验证其CLI/OS沙箱。`remote_stopped=null`保留远端停止未知；unknown不自动恢复或重派，维护入口留后续。需求端不提供promote；本次更新源码后没有重启用户既有后台服务。
+
 ## v0.3 需求会话工作台（2026-09-09）
 
 - 53 项自动化测试全部通过，包括旧版执行/策略回归和新增会话流程。
@@ -23,11 +56,11 @@
 | Codex剩10%，普通个人游戏 | DeepSeek |
 | Codex剩10%，现场critical blocker | 仍使用高能力Codex，不以额度降级 |
 
-## 自动化回归
+## v0.3历史自动化回归
 
 执行 `python -B -m unittest discover -s tests -v`。
 
-当前结果：**53项测试全部通过**，包含8个路由场景，以及本地页面的会话、版本、发布、接口、鉴权、停止、历史、推广和 Windows 密钥加密测试。
+当时结果：**53项测试全部通过**，包含8个路由场景，以及本地页面的会话、版本、发布、接口、鉴权、停止、历史、推广和 Windows 密钥加密测试。v0.4当前结果见页首。
 
 覆盖策略场景、Ultra门控、DDL提升、cheap不降安全门槛、强制执行与禁止升级、历史失败排除、基础设施记录隔离、类型校验；有界无输出进程超时、连续失败检查、重复工具/文件振荡；模型假报成功、scope校验、禁止文件、强制review与review篡改；失败后保留候选与交接、原工作区不污染、源/候选漂移拒绝推广、SVN保留、路径穿越拒绝、过期DDL不启动模型；CLI沙箱参数、主机工具拒绝任意shell、额度桶解释、覆盖指令仅开头生效、Analyzer不采纳无引用置信度。
 
@@ -65,4 +98,4 @@
 2. 用真实 Plant SCADA/批量资产/Python/game 任务建立分层基准，校准先验、review收益、deadline权重和耗时分位数。
 3. 增加 Plant SCADA可加载验证、工业格式/schema检查、外部不可篡改验收oracle，以及人工验收签收。
 4. Git worktree和SVN友好增量快照、推广锁/事务日志、大文件支持；保留主机/设备安全边界。
-5. 在现有会话工作台上增加配额桶到模型映射、跨run续接与经验可视化；后续动态模型发现与联网预研见 [路线图](ROADMAP.md)。
+5. 在现有会话工作台上增加配额桶到模型映射、跨run续接与经验可视化；目录/联网预研首条路径已在v0.4实施，剩余验收见页首及[路线图](ROADMAP.md)。

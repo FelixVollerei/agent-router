@@ -95,6 +95,8 @@ class Policy:
         review = (p.production and easy and
                   (p.failure_blast_radius >= 3 or p.repo_scope >= 4 or p.human_verification_cost >= 4))
         candidates = []
+        from .catalog import evaluation_context
+        evaluation, ignored_evaluation = evaluation_context(cfg, task)
         def scarcity_for(model):
             if not model.scarce:
                 return 1
@@ -127,9 +129,13 @@ class Policy:
             expected_cost = (model.resource_cost * scarcity + review_cost + cfg.time_weight * (minutes + review_minutes) * urgency +
                              (1 - success) * (minutes * urgency + p.human_verification_cost * cfg.human_weight +
                                               p.failure_blast_radius * cfg.failure_weight * residual_risk))
+            evidence = evaluation.get(model.id, [])
+            # At most 5%, after hard eligibility checks; never call this measured savings.
+            adjustment = .05 * sum(e["quality"] for e in evidence) / len(evidence) if evidence else 0
+            expected_cost *= 1 - adjustment
             candidates.append(dict(executor=model.id, reviewer=reviewer, rank=model.rank,
                                    estimated_success=round(success, 4), expected_cost=round(expected_cost, 4),
-                                   history=stats, rejected=reason))
+                                   history=stats, rejected=reason, evaluation=evidence, evaluation_adjustment=adjustment))
         eligible = [x for x in candidates if not x["rejected"]]
         if not eligible:
             raise NoSafeRoute("没有满足安全门槛的执行器；需新证据、用户介入或显式模型覆盖")
@@ -142,6 +148,10 @@ class Policy:
         if best["reviewer"]:
             reasons.append("正式工程影响较大，需 Sol 独立只读 review")
         reasons.append("在通过风险门槛的路径中，预期综合成本最低")
+        if evaluation:
+            reasons.append("已审阅且同版本同量纲的相关评测最多修正5%排序成本；不改变授权/风险门槛")
+        if ignored_evaluation:
+            reasons.append(f"有{len(ignored_evaluation)}条评测因缺审阅/时效/身份/可比性而未用于排序")
         model = cfg.model(best["executor"])
         higher = [m for m in cfg.models if m.rank > model.rank and (m.rank < 5 or self.ultra_allowed(task))]
         next_id = min(higher, key=lambda m: m.rank).id if higher and not task.no_escalation and not forced_deepseek else None

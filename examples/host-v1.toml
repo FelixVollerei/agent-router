@@ -1,0 +1,18 @@
+# Host-owned demo grants. Change deliberately before use with another project.
+[router]
+state_dir = "../.router-dev/host-demo"
+auto_usage = false
+max_attempts = 2
+max_total_runtime = 120
+
+[workspaces.demo]
+path = "demo_repo"
+read_files = ["variables.json", "check.py"]
+write_files = ["variables.json"]
+checks = ["demo_check"]
+protected_files = ["check.py"]
+allowed_models = ["deepseek", "sol_medium"]
+upload_allowed = true
+
+[commands]
+demo_check = ["python", "-B", "check.py"]

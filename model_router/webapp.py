@@ -30,6 +30,8 @@ from .policy import Policy
 from .providers import ProviderUnavailable
 from .usage import read_usage, remaining_percent
 from .workspace import promote
+from .catalog import configured_catalog, discover, validate_evaluations
+from .models import ModelSpec
 
 ROOT = Path(__file__).resolve().parent.parent
 STATIC = Path(__file__).resolve().parent / "web"
@@ -41,7 +43,7 @@ class App(ConversationAPI):
         state.mkdir(parents=True, exist_ok=True)
         self.config = Config.load(config_path)
         self.config.state_dir = state / "data"
-        if not shutil.which(self.config.providers["codex"].get("command", "codex")):
+        if "codex" in self.config.providers and not shutil.which(self.config.providers["codex"].get("command", "codex")):
             found = sorted((Path(os.environ.get("LOCALAPPDATA", "")) / "OpenAI/Codex/bin").glob("*/codex.exe"), key=lambda p: p.stat().st_mtime)
             if found:
                 self.config.providers["codex"]["command"] = str(found[-1])
@@ -72,12 +74,15 @@ class App(ConversationAPI):
 
     def settings(self):
         c = self.config
+        ids = {m.id: m.model for m in c.models}
         return {"quota": c.codex_budget_remaining, "auto_usage": c.auto_usage,
                 "max_minutes": c.max_total_runtime / 60, "max_attempts": c.max_attempts,
-                "deepseek_model": c.model("deepseek").model, "thinking": c.providers["deepseek"].get("thinking", "disabled"),
-                "sol_model": c.model("sol_medium").model, "astra_model": c.model("astra").model,
-                "codex_command": c.providers["codex"].get("command", "codex"),
-                "commands": c.commands}
+                "deepseek_model": ids.get("deepseek", ""), "thinking": c.providers.get("deepseek", {}).get("thinking", "disabled"),
+                "sol_model": ids.get("sol_medium", ""), "astra_model": ids.get("astra", ""),
+                "codex_command": c.providers.get("codex", {}).get("command", "codex"),
+                "commands": c.commands, "models": [asdict(m) for m in c.models], "providers": c.providers,
+                "analyzer_provider": c.analyzer_provider, "analyzer_model": c.analyzer_model,
+                "evaluation_records": c.evaluation_records, "research": c.research}
 
     def update_settings(self, data, persist=True):
         with self.lock:
@@ -85,6 +90,8 @@ class App(ConversationAPI):
                 raise ValueError("任务进行中，请先等待完成或停止，再修改设置")
             c = copy.deepcopy(self.config)
             for name in ("deepseek_model", "sol_model", "astra_model", "codex_command"):
+                if "models" in data and name != "codex_command":
+                    continue
                 if name in data and (not isinstance(data[name], str) or not data[name].strip() or len(data[name]) > 500):
                     raise ValueError("模型名称和命令不能为空")
             if "quota" in data:
@@ -104,11 +111,30 @@ class App(ConversationAPI):
             if "thinking" in data:
                 if data["thinking"] not in {"disabled", "enabled"}:
                     raise ValueError("无效思考模式")
-                c.providers["deepseek"]["thinking"] = data["thinking"]
+                if "deepseek" in c.providers:
+                    c.providers["deepseek"]["thinking"] = data["thinking"]
             if "codex_command" in data:
-                c.providers["codex"]["command"] = data["codex_command"]
-            c.models = [replace(m, model=data.get("deepseek_model" if m.id == "deepseek" else "sol_model" if m.id.startswith("sol_") else "astra_model", m.model)) for m in c.models]
-            c.analyzer_model = c.model("deepseek").model
+                if "codex" in c.providers:
+                    c.providers["codex"]["command"] = data["codex_command"]
+            aliases = {"deepseek": "deepseek_model", "sol_medium": "sol_model", "sol_high": "sol_model", "astra": "astra_model", "astra_ultra": "astra_model"}
+            c.models = [replace(m, model=data.get(aliases.get(m.id), m.model)) for m in c.models]
+            if "models" in data:
+                if not isinstance(data["models"], list) or not 1 <= len(data["models"]) <= 100:
+                    raise ValueError("模型目录需要1–100项")
+                c.models = [ModelSpec(**row) for row in data["models"]]
+            if "providers" in data:
+                if not isinstance(data["providers"], dict) or not 1 <= len(data["providers"]) <= 20:
+                    raise ValueError("供应商目录需要1–20项")
+                c.providers = copy.deepcopy(data["providers"])
+            c.analyzer_provider = data.get("analyzer_provider", c.analyzer_provider)
+            c.analyzer_model = data.get("analyzer_model", data.get("deepseek_model", c.analyzer_model))
+            if c.analyzer_provider not in c.providers or not isinstance(c.analyzer_model, str) or not c.analyzer_model.strip():
+                raise ValueError("请配置有效的预研供应商和模型")
+            if "evaluation_records" in data:
+                validate_evaluations(data["evaluation_records"])
+                c.evaluation_records = copy.deepcopy(data["evaluation_records"])
+            if "research" in data:
+                c.research = copy.deepcopy(data["research"])
             if "commands" in data:
                 if not isinstance(data["commands"], dict):
                     raise ValueError("检查命令必须是JSON对象")
@@ -137,7 +163,7 @@ class App(ConversationAPI):
         with self.lock:
             return {"settings": self.settings(), "key_present": bool(os.environ.get("DEEPSEEK_API_KEY")),
                     "key_saved": (self.state / "deepseek.dpapi").exists(),
-                    "codex_present": bool(shutil.which(self.config.providers["codex"].get("command", "codex"))),
+                    "codex_present": bool(shutil.which(self.config.providers.get("codex", {}).get("command", "codex"))),
                     "state_dir": str(self.config.state_dir), "notice": self.notice,
                     "active_job": self.active, "busy": self.busy,
                     "default_profile": asdict(TaskProfile()),
@@ -324,6 +350,8 @@ def handler_for(app):
                     return self.reply(200, (STATIC / name).read_bytes(), mime)
                 if url.path == "/api/bootstrap":
                     return self.reply(200, app.bootstrap())
+                if url.path == "/api/catalog":
+                    return self.reply(200, configured_catalog(app.config))
                 if url.path == "/api/example":
                     return self.reply(200, {"repo": str(ROOT / "examples/demo_repo"), "task": json.loads((ROOT / "examples/batch-task.json").read_text(encoding="utf-8"))})
                 if url.path.startswith("/api/jobs/"):
@@ -379,6 +407,8 @@ def handler_for(app):
                     return self.reply(200, {"stopping": True})
                 if path == "/api/settings":
                     return self.reply(200, app.update_settings(data))
+                if path == "/api/catalog/discover":
+                    return self.reply(200, app.exclusive(lambda: discover(copy.deepcopy(app.config), data.get("provider"))))
                 if path == "/api/clear-key":
                     with app.lock:
                         if app.active or app.busy:

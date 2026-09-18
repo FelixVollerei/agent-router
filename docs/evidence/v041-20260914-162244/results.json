@@ -1,0 +1,102 @@
+{
+  "captured_at": "2026-09-14T09:22:44.499297+00:00",
+  "baseline_commit": "7c487c8d6e2638d646f806815395410f76b2e1b1",
+  "kind": "automated_fixture_regression_not_live_model_acceptance",
+  "source_before": {
+    "examples/demo_repo/check.py": "a61a5f6284c1ca7eca92230915c7374c7a4f88f0160ef8faa51854b53e5d630a",
+    "examples/host-v1.toml": "dad4ecafc7a898e936006081743900a3ad79c3704c067463b055a27e4fac2b1e",
+    "examples/host_client.py": "cc28189fa764919df894e875892722fc66026c56c405aca91f8e5b7dbbbf160f",
+    "examples/offline_demo.py": "6d80c9ff3323e93270f9e0b77a1f730bbb7467752f34220fcd4353ea9826cdfb",
+    "examples/smoke.py": "cd8ca59aaad6f9746324935bc99de6b2594842e2cd3e958e1c5c283d58603a72",
+    "model_router/__init__.py": "76869bdc6aa29fe85b233be4f796d6b7f839180db3aca81b31a4cbcdc092b99a",
+    "model_router/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "model_router/analyzer.py": "660766d0f35dfa4ead3e6244bbab3c1920eefb92a044a55b9a9efea58d7224e7",
+    "model_router/api_worker.py": "26343b3af9f7f41a9fcc91c66eb8f8a2ac4a28fb02435be9b483dc7aa9396f69",
+    "model_router/catalog.py": "7fd83df0a22cbb59b9492699e82b300f76b01ce83bd31966bf98bfdfcaef798a",
+    "model_router/cli.py": "2fc7d15b6c6087085f3eb06d14a512533fe0ab4ac12bd855348c1f7821b2eb9a",
+    "model_router/config.py": "438a2dbd00c2f6f50a520f63489945fdeb65b58342709a1b2316f65fc3753ecf",
+    "model_router/conversation_api.py": "ad5711a1f486be06545fa35e5f002f636cec48cf154d3237bc95410895a14da0",
+    "model_router/conversations.py": "61b8dd708259e14dff1cf05a136990b41de189ed37943a23739cc6e9e1620793",
+    "model_router/credentials.py": "dcc824c861eefa3675982c45ac2e46c54b9f210cbca8fd23e20f48a41ae6ed38",
+    "model_router/desktop.py": "7be08131d4eda7830134f70c98fb30b0917907dcbcad98804a534c861b4bb754",
+    "model_router/experience.py": "9714e8398ef3d1488aebbe0459c59950f847a80690c8509e4969e322914df873",
+    "model_router/handoff.py": "9f5e3b3640effecc853b9e06160ea5ffd600254b1654934336f1eb01717b40f9",
+    "model_router/job_client.py": "dd0899381d631ca2469a2f6253e484dd47a6bad5ad12e4fe808cf77efb878045",
+    "model_router/job_contract.py": "b9ea31859fb0b8ac3de779e9ed86c17858ed62696054d8141c2cf93be92c647c",
+    "model_router/job_process.py": "c84122c876f43c8b7cd36172548b62a794ad47690fdb6ba31ba3451398e59a27",
+    "model_router/job_store.py": "ba514e62f8a21f3bb6f461003bac311dfb7b4b447bd9d2c28cde5c305da03c9b",
+    "model_router/job_worker.py": "73b77bbd7a4a575c529927196e362c948ec482184eaa2aebf06ffe54c4a02bd8",
+    "model_router/jobs.py": "5c01d13d51c5836c92369a4922f65a72967097f7153164fe0cbfdff5080c8fae",
+    "model_router/models.py": "34780d35a5450f155dd5dd449d0b81bcb5fddc8e8872f2ca1a9152696d949ef1",
+    "model_router/monitor.py": "585b0e455e7bbc5ce7aef913b3515504309634d1d5bc010a3cabd498ec6d432d",
+    "model_router/network.py": "4767cbdfecad7d820dc7f16d5538e870df7b632f0d9d389add3529831f318929",
+    "model_router/orchestrator.py": "ca45c888af4acb0ed102c9cb3ed590e362578654817ffffa7fdc5a082bc4c7de",
+    "model_router/planner.py": "2ff7d9e38699331532b088fb193c3c168632e48fad8b899a68db537045e66757",
+    "model_router/policy.py": "d06d4a5eb1709df34a9f0413bf777e3cb99da83182a403689a86f168be64a4a8",
+    "model_router/process.py": "6bd78ddb1caade2577b2098cc28b60d012a2c10bbb93905276a3095e2bc8601c",
+    "model_router/providers.py": "fa2676831971581d8f7f18110dc1ba6ec08d8499790fbf446bf6c5ff17182e57",
+    "model_router/research.py": "1fd3bbd7ba455584af1f742c9bbb6af3137d4af9be383aca4e2d88aab5fde623",
+    "model_router/usage.py": "87d38becca5a53062feb48cfac2479a6f96918d7f3998d09a3a105b08aac15bb",
+    "model_router/verifier.py": "2dd524918aa68ecb88526125a3a2ca61ab38ab64d504be5465f9b91d39eb19a8",
+    "model_router/web/app.js": "ae5c02f860dd4dfc8fda284d59d0184d024be0496d663db4afb7efb9df6422de",
+    "model_router/web/index.html": "301eba7aecc88e4cef2dad2b8cb0c413d9a2699612bfd5f5bded247b9d9caf34",
+    "model_router/webapp.py": "09fbeafdb8b08d753ede54b0e3961c4b508d88789d9b2f8444dd852952f57680",
+    "model_router/workspace.py": "aef13ccd69c305a54371163895eff51e1945dd5b1fcc8e9b24c20a6533ef3e37",
+    "pyproject.toml": "13f11faa84fa71c0550e1844f6b4a079feb434e6db37a243a9991f71625cd103",
+    "router.example.toml": "800c1faf9fe08b2a5498750eed4f90a165235614558c550c7cb8175161875701",
+    "scripts/install_desktop.py": "86fa66ae4289d0bb3c9f63352a2bb827b345853c9e59a7359ac1a69d946a18b8",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/job_fixture_worker.py": "d99c1e6c58b0f76677a5e2abf8c2f34b0a501743445ed56c2e05310ce5da08f0",
+    "tests/test_analyzer.py": "39e372d715e48cd97e95bab9083253882a1cb4ff99a36a7b53e8e527937fdd6a",
+    "tests/test_catalog_research.py": "c33de9ac72eade9164f6cd696120ae335927e1e36b0ac7a2743adb424741f437",
+    "tests/test_conversations.py": "3ee841f2845132cc7dded83d003525133699acc64858ba4dc56f15f25f3978c1",
+    "tests/test_jobs.py": "522c480442f355c2badbaf6d7bb437e84ed14d7cceb639bf035a432cf0d2ba3c",
+    "tests/test_policy.py": "4c392718c22a7cb7f4266c0337499fe84d7e9a355a63b187097eb4bdca3cdda4",
+    "tests/test_runtime.py": "9d7a1b49908903c05c5e689538b7a9e6cde6a094da777e919c56812931b8690b",
+    "tests/test_webapp.py": "add71966eab9010c3cff8bff90bac2b242e6159b7aac983c7fab601f45336e23"
+  },
+  "checks": [
+    {
+      "argv": [
+        "D:\\Codes\\Python_Codes\\SysManager\\MoXiaoxi\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 18.14100000000326,
+      "log": "check-0.txt"
+    },
+    {
+      "argv": [
+        "node",
+        "--check",
+        "model_router/web/app.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.046000000002095476,
+      "log": "check-1.txt"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "safe.directory=D:/Codes/Python_Codes/SysManager/AgentRouter",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.046999999991385266,
+      "log": "check-2.txt"
+    }
+  ],
+  "duplicate_html_ids": [],
+  "missing_js_static_ids": [],
+  "changed_source_during_tests": []
+}

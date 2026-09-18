@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "sources": [
+    {
+      "kind": "page",
+      "url": "https://example.com",
+      "excerpt": "Example Domain Example Domain This domain is for use in documentation examples without needing permission. Avoid use in operations. Learn more",
+      "bytes": 559,
+      "response_sha256": "ff67a9d764d6a2367a187734e697f6a53217db9a21c101d410a113ca871a299d",
+      "collected_at": "2026-09-14T08:02:16.442462+00:00",
+      "untrusted": true
+    }
+  ],
+  "errors": [],
+  "requests": 1,
+  "bytes": 559
+}

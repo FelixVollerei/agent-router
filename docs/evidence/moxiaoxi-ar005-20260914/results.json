@@ -1,0 +1,491 @@
+{
+  "kind": "real_codex_generated_demo_only",
+  "captured_at": "2026-09-14T09:23:41.869426+00:00",
+  "source_sha256": {
+    "moxiaoxi\\agent_router_backend.py": "5a041fc3941b15f1afec6df94dfc2ccb11f455c963c798f669c95d4e604d7961",
+    "moxiaoxi\\agent_router_client.py": "c9fdbf560d0271a6b18ba2907930ba1a17c23a49782e0c9ab786c79073463f20",
+    "moxiaoxi\\agent_router_config.py": "20adeeecce672a2351bedc3b714b106cc14e9a14d77750e888de504542278857",
+    "moxiaoxi\\app.py": "118b8cfb5d5111c4302863eebe1845d9736438832a0dea8b1b0ddc06acb919be",
+    "moxiaoxi\\appraisal.py": "9a4521454179a6d956d8de368977d7a9237b5ec29459fed07e34620d1824a778",
+    "moxiaoxi\\backend_registry.py": "5dbc06e6d8a5bab75a3f0d469354d550f0efc41ee5bfca6847bdd55c4f899cbe",
+    "moxiaoxi\\config.py": "32f2e62f55a7a0fcb98a4aeafbc51a48c61d8c94cef2615c04c760e5cc290fe2",
+    "moxiaoxi\\context.py": "3dd5ada181fe83d6373f57c014c9431ae96ceb2aee2c304c9401247668d85b7b",
+    "moxiaoxi\\context_composer.py": "5a7f5337def05aff8996c99767c9fb2f423e514cc81db3394cc50b02001676e9",
+    "moxiaoxi\\context_policy.py": "ff93548bebcbc7f9f48c9db4df663803a5c195e1e42f9ecfc979e019331c7c77",
+    "moxiaoxi\\conversation.py": "be2c7373785f15124b9a2b8ed8720a5e50b5cd69ab7755d6048a572bc83d5674",
+    "moxiaoxi\\conversation_store.py": "cc2c55127ef8892439afd1a7199e2e734a0aa0cb5900d03eea8dd68dfe8ad436",
+    "moxiaoxi\\db.py": "9ca1462f33e943715a8bc79c223f7890514a2f43f15833f9deb5cf02727e11e3",
+    "moxiaoxi\\decision.py": "75e63d6d98791b5af8ee048a42d703e6b080d2507dbce2d479e557f4daf3bc67",
+    "moxiaoxi\\desktop_instance.py": "078f8a2e84857986e112a0fc86b798a12f3db3ba8495bbf33a7f4b00cc583d37",
+    "moxiaoxi\\diagnostics.py": "18b9e2b150db313cced206311d9fea08e6aa1dce710973a102f1420fdd065fb6",
+    "moxiaoxi\\experience.py": "171e5e20efae2bb8888251de787a8e12c41b4fc582f7443a3ffabaa75230c37d",
+    "moxiaoxi\\fake_backend.py": "a27498a737eeaf4827e97d7378acf8b9daf644d6edb7b8132a5ae1f929b5e706",
+    "moxiaoxi\\harness_backend.py": "b463388910329f1643cde90c4ef9aa24613337fc6574712ae7d9e45e23b3576f",
+    "moxiaoxi\\harness_install.py": "66834c23f2cb409489512fa77064917833b88beac92bc4a4848f162289541aaf",
+    "moxiaoxi\\harness_proxy.py": "c97001d67148e9fc85b9be8eafdef7f7e186bf753093670b1cc3ab6390035ac6",
+    "moxiaoxi\\input_adapter.py": "7acdf41219b81e40544c0d54de85a105fc95973bc1694a2c68b19008cdccc10f",
+    "moxiaoxi\\input_ingress.py": "787fbfbe4bb5f3b2236e151c092cedc61e0761d17dee551fee0ed6aefceb1930",
+    "moxiaoxi\\instance.py": "92db18824d17b4b989ccc9fe66eb076284aac0a806de739fb12859776f965510",
+    "moxiaoxi\\interaction.py": "ab29e19ad4a427b272adf23f559c312e223c8fb6a86df6c349145eed8bc3c4de",
+    "moxiaoxi\\knowledge.py": "0efa6baa4bb57a523730b54fb4ee94793f80604b839548525314a6c41d899779",
+    "moxiaoxi\\lifecycle.py": "75069813bcb375fa2fa639bae4ebca841d2fe50a89c7f0d23d73aac38fe3ba9f",
+    "moxiaoxi\\memory.py": "96bd6f31833bd3e615ed8a6b5bf48a14fe2f6009c51eeb304ad5a21040bf6bc5",
+    "moxiaoxi\\models.py": "76f7ff5c7c5ea875bbf8b2fd943942141115c106fbd9ed9380218257f512f533",
+    "moxiaoxi\\observation_state.py": "cb3e6cea993907c60d15d24bdfe959cfe2299d5df87b3215de569773ac2d4f40",
+    "moxiaoxi\\parsing.py": "1591a8a4a650f30d78494c06059924881c7928f2ce925705f1c4e5c58767f877",
+    "moxiaoxi\\personality.py": "d9de8f2093d865615a8b49a4044366caba4105ff63194df739c44b7b8c166dac",
+    "moxiaoxi\\personality_state.py": "f9713208793f526be5333a36e854fdbd46b17861aa40fb60bbd29727aa579055",
+    "moxiaoxi\\predictor.py": "9b212f79cad540c73af34c7aa069b6f59c4ddc23d3c02a12de5d45d005a616fa",
+    "moxiaoxi\\providers.py": "f1e2bf6243e1fbcfdc4af4f782f559d217b4cbabaa1755a0588a9cdfd91b6c83",
+    "moxiaoxi\\reading_backend.py": "91b7f2d3b50fc5073c454fda1dde3bba6f4a7fb890c40cfbf49a7aed1406af34",
+    "moxiaoxi\\remote.py": "15094561213821d4396217ec219cfdc276406aac8809c1edeb603d73e5fd040a",
+    "moxiaoxi\\remote_contract.py": "7a38367aa1b4934d5698ef3ec768b66929b4c385c95393d85d2fd4bc0eba9f2e",
+    "moxiaoxi\\remote_endpoint.py": "d518b158e32a752d4f4fc3571ba16d17142f8dba164ac8bbb4f58c75b0bc32e1",
+    "moxiaoxi\\remote_store.py": "f46b989da42542b701b8a4a05e9cc0c2a3b2fa4a8b9904ba295ba5ea57dae7c9",
+    "moxiaoxi\\rules_gate.py": "d54c33e5362096d5414051a1d23acfcde544a8bf13618224c6d3783e364484f2",
+    "moxiaoxi\\search_secret.py": "a83bff650901e456cfec4524ccd7a6ef8d0c06eccf8eba9b4e552998a92334c4",
+    "moxiaoxi\\semantic.py": "eea3d72e98cb62c2874882a5752fbe411af0d4a9c3d96cbe84a3ecea26df117b",
+    "moxiaoxi\\semantic_cpu.py": "8f92211fe1c07e1ce28ff633e27e2a4428f2dfc490f3303120451dfb1caf0e78",
+    "moxiaoxi\\semantic_eval.py": "6f7619acc066f423399e43929d384de9636ef779e7ec79306f1d9b44b75e19f1",
+    "moxiaoxi\\speech.py": "cb6d019a18c3eff0db881cc1479d2fa9535b6a7a1720a88b29237401da3537e7",
+    "moxiaoxi\\speech_worker.py": "754259a3b6a34336f12732ce90357810521bd7af5b34e81a3c90e6f807865bf8",
+    "moxiaoxi\\system.py": "fb06835c6a761d099072ab3d9a5a938243ac9cb65639e3644b34888c456b883f",
+    "moxiaoxi\\tasks.py": "f238b74d3ed4100bc68ab61a63a61ccbccc10c0aa5ed8eb6dbbcad3a77046a55",
+    "moxiaoxi\\task_budget.py": "8a3c1c8e0a8dbd20b1b6d79996ab40052d3cc54e8a0b8f0ab036eade046dc406",
+    "moxiaoxi\\task_contract.py": "774e8ae290a638d5e100a2c965594cbec79bafbbe781677cd1f7b371b542e45e",
+    "moxiaoxi\\task_store.py": "f7c7d679d3851803d6c8db44f046c7789fc3a0aa81378ab69023021830001353",
+    "moxiaoxi\\transport.py": "58d6e1757efe588752e524308fed73db661d4677a870930cb330582dcbfe2787",
+    "moxiaoxi\\visual.py": "ad831d29fe94d0f82e9b8849c2336f8eb764f4a89234b709ad451013c0d2cf9a",
+    "moxiaoxi\\visual_contract.py": "ea76037b8ffce6cd661cc45461733f1f7075a41906c9c8589a9c103bb431e18d",
+    "moxiaoxi\\voice_output.py": "6f0dc5e8373fc4753fa90420428066ef1eda4e2c70e70d0e700c29f5025bd94b",
+    "moxiaoxi\\voice_primitives.py": "2508bca5bf221dcbddf5f71fafecd70e0907ba0857d21c0a485caa102d301c67",
+    "moxiaoxi\\websearch.py": "f7364840e1d3be10a0c5070fb964628eb69fbcdf8efb990419c8269d5edeaba0",
+    "moxiaoxi\\__init__.py": "08d2d98cb2530463ce02ac6241d366f6b790cc1b66fc27314e78cf01cd57b3e5",
+    "moxiaoxi\\__main__.py": "c11e32c28bfbf233a9a9a437f58434cd249392943cc2ab7ee1b40466b59e684d",
+    "moxiaoxi\\static\\app.js": "3d3f6fa670d1950876a97f6bf638f8f0acfb3ca19dc2e859c58aff717677d703",
+    "moxiaoxi\\static\\audio-capture-worklet.js": "4362998dccc795f9d33a9103a80f5e2dc42d6b5c05dfa45820e58fc98871a608",
+    "moxiaoxi\\static\\conversation-client.js": "addd45f335468bfa76eb4b4f28792687508c255e0eb7366336379fa04c90686b",
+    "moxiaoxi\\static\\entry.js": "95b25469026eb5073787f440548f5d49dfa6966a7bc14a6a9116a57d615b0a78",
+    "moxiaoxi\\static\\index.html": "3af34d1f4bed24d354d1e723d608db9a53c63d165deb2d1ffac3309e4595d7ac",
+    "moxiaoxi\\static\\observatory.js": "b07c3deded33d1cfb3454cbee3ef2aaa5e4e48ee0454f4cf41b8b4e7803c4c3b",
+    "moxiaoxi\\static\\presence.js": "5fa501f6c58b1b1c37deff9fb37229f1babee805bfa9a93190aae77e0856c895",
+    "moxiaoxi\\static\\remote.js": "34c0d307e42b1b07b0077fe16c441351611ee81f5255c6b5db9a964e1a7c057d",
+    "moxiaoxi\\static\\speech.js": "34179c2f562eab25f80bdd74b7cbafd8be07f4e5ab1d2836ee92ec5d3e035676",
+    "moxiaoxi\\static\\visual.js": "f0d0ee5fcdd1df13b8f75a971dfbbf9fc771587e47f5c2ca1c06e253e8d5c004",
+    "moxiaoxi\\static\\vendor\\dompurify\\dist\\purify.min.js": "f263b05369e050fa175d4ecb9c9358eb4253602d510297adfb31df48b2f1c4d5",
+    "moxiaoxi\\static\\vendor\\katex\\dist\\katex.min.js": "10a91b479cd927446ceb60409fb0d72b5d0d05eaf446c9e52fafd64058c84540",
+    "moxiaoxi\\static\\vendor\\katex\\dist\\contrib\\auto-render.min.js": "e5372d199bcdae8b4de71d0f7ceba72a4ba12774a27c60a6f1f77d03b3228ee4",
+    "moxiaoxi\\static\\vendor\\marked\\lib\\marked.umd.js": "69451c8541c9c1e7a4bf3ffc6f73c4d89633de92bfbe3e484dfe182ef8091f88"
+  },
+  "router_source_sha256": {
+    "model_router\\analyzer.py": "660766d0f35dfa4ead3e6244bbab3c1920eefb92a044a55b9a9efea58d7224e7",
+    "model_router\\api_worker.py": "26343b3af9f7f41a9fcc91c66eb8f8a2ac4a28fb02435be9b483dc7aa9396f69",
+    "model_router\\catalog.py": "7fd83df0a22cbb59b9492699e82b300f76b01ce83bd31966bf98bfdfcaef798a",
+    "model_router\\cli.py": "2fc7d15b6c6087085f3eb06d14a512533fe0ab4ac12bd855348c1f7821b2eb9a",
+    "model_router\\config.py": "438a2dbd00c2f6f50a520f63489945fdeb65b58342709a1b2316f65fc3753ecf",
+    "model_router\\conversations.py": "61b8dd708259e14dff1cf05a136990b41de189ed37943a23739cc6e9e1620793",
+    "model_router\\conversation_api.py": "ad5711a1f486be06545fa35e5f002f636cec48cf154d3237bc95410895a14da0",
+    "model_router\\credentials.py": "dcc824c861eefa3675982c45ac2e46c54b9f210cbca8fd23e20f48a41ae6ed38",
+    "model_router\\desktop.py": "7be08131d4eda7830134f70c98fb30b0917907dcbcad98804a534c861b4bb754",
+    "model_router\\experience.py": "9714e8398ef3d1488aebbe0459c59950f847a80690c8509e4969e322914df873",
+    "model_router\\handoff.py": "9f5e3b3640effecc853b9e06160ea5ffd600254b1654934336f1eb01717b40f9",
+    "model_router\\jobs.py": "5c01d13d51c5836c92369a4922f65a72967097f7153164fe0cbfdff5080c8fae",
+    "model_router\\job_client.py": "dd0899381d631ca2469a2f6253e484dd47a6bad5ad12e4fe808cf77efb878045",
+    "model_router\\job_contract.py": "b9ea31859fb0b8ac3de779e9ed86c17858ed62696054d8141c2cf93be92c647c",
+    "model_router\\job_process.py": "c84122c876f43c8b7cd36172548b62a794ad47690fdb6ba31ba3451398e59a27",
+    "model_router\\job_store.py": "ba514e62f8a21f3bb6f461003bac311dfb7b4b447bd9d2c28cde5c305da03c9b",
+    "model_router\\job_worker.py": "73b77bbd7a4a575c529927196e362c948ec482184eaa2aebf06ffe54c4a02bd8",
+    "model_router\\models.py": "34780d35a5450f155dd5dd449d0b81bcb5fddc8e8872f2ca1a9152696d949ef1",
+    "model_router\\monitor.py": "585b0e455e7bbc5ce7aef913b3515504309634d1d5bc010a3cabd498ec6d432d",
+    "model_router\\network.py": "4767cbdfecad7d820dc7f16d5538e870df7b632f0d9d389add3529831f318929",
+    "model_router\\orchestrator.py": "ca45c888af4acb0ed102c9cb3ed590e362578654817ffffa7fdc5a082bc4c7de",
+    "model_router\\planner.py": "2ff7d9e38699331532b088fb193c3c168632e48fad8b899a68db537045e66757",
+    "model_router\\policy.py": "d06d4a5eb1709df34a9f0413bf777e3cb99da83182a403689a86f168be64a4a8",
+    "model_router\\process.py": "6bd78ddb1caade2577b2098cc28b60d012a2c10bbb93905276a3095e2bc8601c",
+    "model_router\\providers.py": "fa2676831971581d8f7f18110dc1ba6ec08d8499790fbf446bf6c5ff17182e57",
+    "model_router\\research.py": "1fd3bbd7ba455584af1f742c9bbb6af3137d4af9be383aca4e2d88aab5fde623",
+    "model_router\\usage.py": "87d38becca5a53062feb48cfac2479a6f96918d7f3998d09a3a105b08aac15bb",
+    "model_router\\verifier.py": "2dd524918aa68ecb88526125a3a2ca61ab38ab64d504be5465f9b91d39eb19a8",
+    "model_router\\webapp.py": "09fbeafdb8b08d753ede54b0e3961c4b508d88789d9b2f8444dd852952f57680",
+    "model_router\\workspace.py": "aef13ccd69c305a54371163895eff51e1945dd5b1fcc8e9b24c20a6533ef3e37",
+    "model_router\\__init__.py": "76869bdc6aa29fe85b233be4f796d6b7f839180db3aca81b31a4cbcdc092b99a",
+    "model_router\\__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+  },
+  "router_project": "D:\\Codes\\Python_Codes\\SysManager\\AgentRouter",
+  "transport": "ASGI local request -> MoXiaoxi Gate/TaskRuntime -> private Router subprocess",
+  "main_chat_model": "fixture; no local chat weights loaded",
+  "records": [
+    {
+      "elapsed": 0.6090000000112923,
+      "state": "running"
+    },
+    {
+      "elapsed": 51.375,
+      "state": "succeeded"
+    }
+  ],
+  "launch_config": "artifacts\\ar005-20260914-162341-857420\\integration.json",
+  "connected": true,
+  "admission": {
+    "receipt": {
+      "event_id": "probe-2e21064aae054f4b825f3863364048be",
+      "status": "accepted",
+      "reason": "task_accepted",
+      "frontend": {
+        "addressed": "uncertain",
+        "confidence": null,
+        "intent": "task",
+        "route": "task_candidate",
+        "reason": "host_task_request",
+        "source": "user",
+        "event_id": "probe-2e21064aae054f4b825f3863364048be",
+        "context_policy": null,
+        "control": null,
+        "task_id": null,
+        "candidate_action": "delegate",
+        "memory_candidate": null
+      },
+      "task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+      "task_accepted": true,
+      "response_delivered": false,
+      "duplicate": false
+    },
+    "task": {
+      "task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+      "backend_id": "agent-router",
+      "status": "running",
+      "external_session_id": null,
+      "reason": "dispatch_reserved",
+      "simulated": false,
+      "accepted": true,
+      "response_delivered": false,
+      "origin": "user",
+      "session_id": "aac067080d1d49cabc8bceeb9268d430",
+      "root_id": "probe-2e21064aae054f4b825f3863364048be",
+      "goal": "Set value.txt to exactly done (no newline). Keep check.py unchanged and run its check. Return only the candidate result.",
+      "spec": {
+        "schema_version": 2,
+        "task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+        "idempotency_key": "router:probe-2e21064aae054f4b825f3863364048be",
+        "trigger_event_id": "probe-2e21064aae054f4b825f3863364048be",
+        "origin": "user",
+        "session_id": "aac067080d1d49cabc8bceeb9268d430",
+        "turn_id": null,
+        "causation_id": null,
+        "kind": "delegate",
+        "name": "engineering_task",
+        "target": null,
+        "context_revision": null,
+        "instruction": "Set value.txt to exactly done (no newline). Keep check.py unchanged and run its check. Return only the candidate result.",
+        "goal": "Set value.txt to exactly done (no newline). Keep check.py unchanged and run its check. Return only the candidate result.",
+        "stop_condition": "返回候选与验收依据；达到预算或取消时停止",
+        "cancellation_task_id": null,
+        "cwd": null,
+        "scope": "engineering_workspace",
+        "status": "candidate",
+        "dispatchable": false,
+        "execution_authorized": false,
+        "root_id": "probe-2e21064aae054f4b825f3863364048be",
+        "need_key": null,
+        "allowed_tools": [
+          "engineering_task"
+        ],
+        "budget": {
+          "schema_version": 2,
+          "timeout_seconds": 120.0,
+          "max_attempts": 1,
+          "max_provider_calls": 1
+        },
+        "expires_at": 1789377942.424989,
+        "queries": [],
+        "urls": [],
+        "workspace_id": "demo",
+        "workspace_version": "9832df6a449b13a43800e11a7c1f6af727678490a07e8ef04ac548179690f298",
+        "write_files": [
+          "value.txt"
+        ],
+        "checks": [
+          "check"
+        ],
+        "allowed_models": [
+          "sol_medium"
+        ],
+        "selected_executor": "sol_medium",
+        "acceptance_criteria": []
+      },
+      "observation": null,
+      "routing": {
+        "backend_id": "agent-router",
+        "capability": "engineering_task",
+        "scope": "engineering_workspace",
+        "preference": "agent-router",
+        "available_at_acceptance": true,
+        "host_permissions_checked": true,
+        "budget_reserved_before_dispatch": true,
+        "verification": "router_jobs_v1_local_supervision_no_hard_token_limit",
+        "memory_owner": "local-user"
+      },
+      "execution": null,
+      "usage": {
+        "reserved": {
+          "schema_version": 2,
+          "timeout_seconds": 120.0,
+          "max_attempts": 1,
+          "max_provider_calls": 1
+        },
+        "used": {
+          "dispatches": 0,
+          "attempts": 0,
+          "provider_calls": 0
+        },
+        "usage_method": "delegated upper bounds charged before dispatch; observed usage in execution receipt",
+        "persistent": true,
+        "settled": false
+      },
+      "event_counters": {
+        "duplicate": 0,
+        "out_of_order": 0,
+        "association_error": 0,
+        "late": 0
+      }
+    }
+  },
+  "result": {
+    "task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+    "backend_id": "agent-router",
+    "status": "succeeded",
+    "external_session_id": "daa13bb22bd24bb790c764faf039accd",
+    "reason": "router_verified",
+    "simulated": false,
+    "accepted": true,
+    "response_delivered": false,
+    "origin": "user",
+    "session_id": "aac067080d1d49cabc8bceeb9268d430",
+    "root_id": "probe-2e21064aae054f4b825f3863364048be",
+    "goal": "Set value.txt to exactly done (no newline). Keep check.py unchanged and run its check. Return only the candidate result.",
+    "spec": {
+      "schema_version": 2,
+      "task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+      "idempotency_key": "router:probe-2e21064aae054f4b825f3863364048be",
+      "trigger_event_id": "probe-2e21064aae054f4b825f3863364048be",
+      "origin": "user",
+      "session_id": "aac067080d1d49cabc8bceeb9268d430",
+      "turn_id": null,
+      "causation_id": null,
+      "kind": "delegate",
+      "name": "engineering_task",
+      "target": null,
+      "context_revision": null,
+      "instruction": "Set value.txt to exactly done (no newline). Keep check.py unchanged and run its check. Return only the candidate result.",
+      "goal": "Set value.txt to exactly done (no newline). Keep check.py unchanged and run its check. Return only the candidate result.",
+      "stop_condition": "返回候选与验收依据；达到预算或取消时停止",
+      "cancellation_task_id": null,
+      "cwd": null,
+      "scope": "engineering_workspace",
+      "status": "candidate",
+      "dispatchable": false,
+      "execution_authorized": false,
+      "root_id": "probe-2e21064aae054f4b825f3863364048be",
+      "need_key": null,
+      "allowed_tools": [
+        "engineering_task"
+      ],
+      "budget": {
+        "schema_version": 2,
+        "timeout_seconds": 120.0,
+        "max_attempts": 1,
+        "max_provider_calls": 1
+      },
+      "expires_at": 1789377942.424989,
+      "queries": [],
+      "urls": [],
+      "workspace_id": "demo",
+      "workspace_version": "9832df6a449b13a43800e11a7c1f6af727678490a07e8ef04ac548179690f298",
+      "write_files": [
+        "value.txt"
+      ],
+      "checks": [
+        "check"
+      ],
+      "allowed_models": [
+        "sol_medium"
+      ],
+      "selected_executor": "sol_medium",
+      "acceptance_criteria": []
+    },
+    "observation": {
+      "observation_id": "obs-task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+      "task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+      "source_event_id": "probe-2e21064aae054f4b825f3863364048be",
+      "backend_id": "agent-router",
+      "collected_at": 1789377873.1515598,
+      "source_ref": "router:daa13bb22bd24bb790c764faf039accd",
+      "content": "工程候选已通过检查，尚未应用到原工程。",
+      "content_hash": "e8fc633518a1a2efa39a6d7067632445f703f56bba1824760ab1b982b0d3fddc",
+      "status": "snippet",
+      "modality": "structured",
+      "untrusted": true,
+      "simulated": false,
+      "references": [],
+      "http_attempts": 0,
+      "response_bytes": 0,
+      "model_tokens": null
+    },
+    "routing": {
+      "backend_id": "agent-router",
+      "capability": "engineering_task",
+      "scope": "engineering_workspace",
+      "preference": "agent-router",
+      "available_at_acceptance": true,
+      "host_permissions_checked": true,
+      "budget_reserved_before_dispatch": true,
+      "verification": "router_jobs_v1_local_supervision_no_hard_token_limit",
+      "memory_owner": "local-user"
+    },
+    "execution": {
+      "protocol": "router.jobs/v1",
+      "workspace_version": "9832df6a449b13a43800e11a7c1f6af727678490a07e8ef04ac548179690f298",
+      "client_task_id": "task-ccc2dfd4a5a6471cbe33bfbb615430e4",
+      "idempotency_key": "router:probe-2e21064aae054f4b825f3863364048be",
+      "client_id": "moxiaoxi-66b6833a45e8ca15590d",
+      "job_id": "daa13bb22bd24bb790c764faf039accd",
+      "run_id": "ac323bfca3184e32a448b8bf2355c4cd",
+      "event_cursor": 18,
+      "applied": false,
+      "remote_stopped": null,
+      "delegated_runtime_limit": 119.93799999999464,
+      "router_state": "verified",
+      "provider_calls": 1,
+      "attempts": 1,
+      "tokens_observed": 120588,
+      "tokens_complete": false,
+      "api_cost": null,
+      "local_stopped": true,
+      "artifact_count": 6,
+      "artifacts": [
+        {
+          "bytes": 59,
+          "ref": "router:daa13bb22bd24bb790c764faf039accd:changes.diff",
+          "relative_path": "changes.diff",
+          "sha256": "606e62cc8b80ff4b9f265fa61df228af108fd28d613baea015f4594cdcb1765f",
+          "artifact_id": "e1d999fc2cc2f7e4d1eebc31fbfe5b2812f84d50fde06481a1c03c75c2d0e7f1"
+        },
+        {
+          "bytes": 300,
+          "ref": "router:daa13bb22bd24bb790c764faf039accd:result.json",
+          "relative_path": "result.json",
+          "sha256": "e8bda269808c6b810d15633d77bd5a0d1e8630de176b754e73024558b230a170",
+          "artifact_id": "deb0b36e00b40163a96bdab7d7c849cfa4175c18d389a3768672c40fea10c290"
+        },
+        {
+          "bytes": 665,
+          "ref": "router:daa13bb22bd24bb790c764faf039accd:verification-1.json",
+          "relative_path": "verification-1.json",
+          "sha256": "7cb5c84079e23c4f30f61e3686c6611a19ee1d89ae1b6bc18eac307fd6ee42af",
+          "artifact_id": "ecbe7fe18a39239e282c696c8b048da43458e965b6a97cad452807c836bb976a"
+        },
+        {
+          "bytes": 170,
+          "ref": "router:daa13bb22bd24bb790c764faf039accd:verified-hashes.json",
+          "relative_path": "verified-hashes.json",
+          "sha256": "1159e6657a6856bd1c3157e39f797cc9a2430b85bec99670dff987296ea613c0",
+          "artifact_id": "b6d276e07390394b3221f5285c1ba966849a6abf43f0040fa97ce37af627e6e4"
+        },
+        {
+          "bytes": 90,
+          "ref": "router:daa13bb22bd24bb790c764faf039accd:work/check.py",
+          "relative_path": "work/check.py",
+          "sha256": "b7f03613f1ff037867f853acad5b2f2977ec58d4ecfc1ca0068d0d127f4bf430",
+          "artifact_id": "c51533dcf22234438cafe67c8bc77a625a2a9f2993fc246bfe1428327df7b4b1"
+        },
+        {
+          "bytes": 4,
+          "ref": "router:daa13bb22bd24bb790c764faf039accd:work/value.txt",
+          "relative_path": "work/value.txt",
+          "sha256": "a4c3ed04a95a3da14a9d235c83d868bed7c0f45cf7f3faa751ee8f50598d2211",
+          "artifact_id": "7c554f7244554b09a1fb4ecfba20ccc45389fd128b42ed53538ff4a8e29e3c5a"
+        }
+      ],
+      "artifacts_truncated": false
+    },
+    "usage": {
+      "reserved": {
+        "schema_version": 2,
+        "timeout_seconds": 120.0,
+        "max_attempts": 1,
+        "max_provider_calls": 1
+      },
+      "used": {
+        "dispatches": 1,
+        "attempts": 1,
+        "provider_calls": 1
+      },
+      "usage_method": "delegated upper bounds charged before dispatch; observed usage in execution receipt",
+      "persistent": true,
+      "settled": true
+    },
+    "event_counters": {
+      "duplicate": 0,
+      "out_of_order": 0,
+      "association_error": 0,
+      "late": 0
+    },
+    "backend_reported_state": "succeeded"
+  },
+  "artifacts_response": {
+    "artifacts": [
+      {
+        "bytes": 59,
+        "ref": "router:daa13bb22bd24bb790c764faf039accd:changes.diff",
+        "relative_path": "changes.diff",
+        "sha256": "606e62cc8b80ff4b9f265fa61df228af108fd28d613baea015f4594cdcb1765f",
+        "artifact_id": "e1d999fc2cc2f7e4d1eebc31fbfe5b2812f84d50fde06481a1c03c75c2d0e7f1"
+      },
+      {
+        "bytes": 300,
+        "ref": "router:daa13bb22bd24bb790c764faf039accd:result.json",
+        "relative_path": "result.json",
+        "sha256": "e8bda269808c6b810d15633d77bd5a0d1e8630de176b754e73024558b230a170",
+        "artifact_id": "deb0b36e00b40163a96bdab7d7c849cfa4175c18d389a3768672c40fea10c290"
+      },
+      {
+        "bytes": 665,
+        "ref": "router:daa13bb22bd24bb790c764faf039accd:verification-1.json",
+        "relative_path": "verification-1.json",
+        "sha256": "7cb5c84079e23c4f30f61e3686c6611a19ee1d89ae1b6bc18eac307fd6ee42af",
+        "artifact_id": "ecbe7fe18a39239e282c696c8b048da43458e965b6a97cad452807c836bb976a"
+      },
+      {
+        "bytes": 170,
+        "ref": "router:daa13bb22bd24bb790c764faf039accd:verified-hashes.json",
+        "relative_path": "verified-hashes.json",
+        "sha256": "1159e6657a6856bd1c3157e39f797cc9a2430b85bec99670dff987296ea613c0",
+        "artifact_id": "b6d276e07390394b3221f5285c1ba966849a6abf43f0040fa97ce37af627e6e4"
+      },
+      {
+        "bytes": 90,
+        "ref": "router:daa13bb22bd24bb790c764faf039accd:work/check.py",
+        "relative_path": "work/check.py",
+        "sha256": "b7f03613f1ff037867f853acad5b2f2977ec58d4ecfc1ca0068d0d127f4bf430",
+        "artifact_id": "c51533dcf22234438cafe67c8bc77a625a2a9f2993fc246bfe1428327df7b4b1"
+      },
+      {
+        "bytes": 4,
+        "ref": "router:daa13bb22bd24bb790c764faf039accd:work/value.txt",
+        "relative_path": "work/value.txt",
+        "sha256": "a4c3ed04a95a3da14a9d235c83d868bed7c0f45cf7f3faa751ee8f50598d2211",
+        "artifact_id": "7c554f7244554b09a1fb4ecfba20ccc45389fd128b42ed53538ff4a8e29e3c5a"
+      }
+    ],
+    "applied": false
+  },
+  "candidate_exact_done": true,
+  "candidate_hash_matches": true,
+  "source_unchanged": true,
+  "private_file_not_exported": true,
+  "same_session": true,
+  "synthetic_http_requests": null,
+  "duplicate_same_task": true,
+  "passed": true,
+  "seconds": 51.51499999999942
+}

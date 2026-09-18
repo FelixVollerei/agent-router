@@ -41,6 +41,9 @@ class Config:
     failure_weight: float = 15
     review_cost_fraction: float = .35
     review_residual_risk: float = .5
+    research: dict = field(default_factory=dict)
+    evaluation_records: list[dict] = field(default_factory=list)
+    workspaces: dict = field(default_factory=dict)
 
     @classmethod
     def load(cls, path: str | Path | None = None) -> Config:
@@ -59,10 +62,34 @@ class Config:
         cfg.providers.update(data.get("providers", {}))
         cfg.commands = data.get("commands", {})
         cfg.budget_overrides = data.get("budgets", {})
+        cfg.research = data.get("research", {})
+        cfg.evaluation_records = data.get("evaluations", [])
+        cfg.workspaces = data.get("workspaces", {})
+        for settings in cfg.workspaces.values():
+            if "path" in settings:
+                settings["path"] = str((base / settings["path"]).resolve())
         cfg.validate()
         return cfg
 
     def validate(self):
+        from .catalog import validate_evaluations
+        from .network import validate_url
+        import re
+        validate_evaluations(self.evaluation_records)
+        if not isinstance(self.research, dict) or set(self.research) - {"api_key_env"}:
+            raise ValueError("Invalid research settings")
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", self.research.get("api_key_env", "BRAVE_SEARCH_API_KEY")):
+            raise ValueError("Invalid search credential reference")
+        for name, provider in self.providers.items():
+            if not isinstance(provider, dict):
+                raise ValueError("Provider settings must be objects")
+            if set(provider) - {"kind", "base_url", "api_key_env", "command", "windows_sandbox", "thinking", "reasoning_effort", "max_output_tokens"}:
+                raise ValueError("Provider accepts credential environment references, never inline secrets or arbitrary settings")
+            if provider.get("kind") == "managed_chat":
+                if validate_url(provider.get("base_url", ""), True).query:
+                    raise ValueError("Provider base URL cannot carry query credentials")
+                if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", provider.get("api_key_env", "DEEPSEEK_API_KEY")):
+                    raise ValueError("Invalid provider credential reference")
         for key in ("max_total_runtime", "analyzer_timeout", "time_weight", "human_weight", "failure_weight", "review_cost_fraction", "review_residual_risk"):
             value = getattr(self, key)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
@@ -79,6 +106,10 @@ class Config:
         if len(set(ids)) != len(ids) or not self.models:
             raise ValueError("Model IDs must be unique")
         for m in self.models:
+            if not all(isinstance(s, str) and s.strip() for s in (m.id, m.provider, m.model)) or not isinstance(m.reasoning, str):
+                raise ValueError("Invalid model identity")
+            if type(m.scarce) is not bool or any(isinstance(n, bool) or not isinstance(n, (float, int)) or not math.isfinite(n) for n in (m.prior_success, m.resource_cost, m.expected_minutes)):
+                raise ValueError("Invalid model numeric fields")
             if m.provider not in self.providers or not 0 < m.prior_success < 1 or type(m.rank) is not int or m.rank < 0 or not math.isfinite(m.resource_cost) or m.resource_cost < 0 or not math.isfinite(m.expected_minutes) or m.expected_minutes <= 0:
                 raise ValueError(f"Invalid model spec: {m.id}")
         for name, argv in self.commands.items():

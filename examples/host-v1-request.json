@@ -1,0 +1,19 @@
+{
+  "client_task_id": "demo-parent-1",
+  "idempotency_key": "demo-input-1",
+  "session_id": "demo-conversation",
+  "workspace_id": "demo",
+  "task": {
+    "request": "Use check.py as the acceptance oracle and update only variables.json to satisfy it. Preserve all existing values.",
+    "profile": {
+      "task_type": "batch_edit", "requirement_clarity": 5, "automatic_verifiability": 5,
+      "reversibility": 5, "failure_blast_radius": 1, "root_cause_uncertainty": 0,
+      "domain_uncertainty": 0, "tool_complexity": 1, "repo_scope": 1
+    },
+    "allowed_files": ["variables.json"], "checks": ["demo_check"],
+    "acceptance_criteria": ["The unchanged check.py passes and values are preserved."],
+    "no_escalation": true
+  },
+  "limits": {"max_runtime": 120, "max_attempts": 1, "max_provider_calls": 2},
+  "allowed_models": ["deepseek", "sol_medium"], "upload_allowed": true
+}

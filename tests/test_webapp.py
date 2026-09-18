@@ -107,7 +107,8 @@ class WebAppTests(unittest.TestCase):
             self.assertTrue(result["key_present"])
             saved = (self.app.state / "settings.json").read_text()
             self.assertNotIn("fixture-secret-only", saved)
-            self.assertNotIn("api_key", saved)
+            # v0.4 persists credential environment names, never inline key material.
+            self.assertNotIn("api_key", json.loads(saved))
             self.assertEqual(self.request("/api/settings", {"commands": {"oops": "python check.py"}})[0], 400)
             self.assertEqual(self.request("/api/settings", {"max_minutes": -1})[0], 400)
 

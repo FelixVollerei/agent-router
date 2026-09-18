@@ -20,6 +20,8 @@ def spawn(argv, cwd=None, stdin=True):
 
 
 def kill_tree(proc):
+    if proc.poll() is not None:
+        return  # Do not signal a PID that may have been recycled after the owned process exited.
     if os.name == "nt":
         # PID is an integer from Popen, never shell-interpolated user input.
         subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"],

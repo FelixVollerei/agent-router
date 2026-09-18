@@ -1,5 +1,13 @@
 # 架构与实现交付
 
+## v0.4 当前增量
+
+2026-09-14以[方案v1](V1.md)冻结本次范围。旧编排核心继续复用：`catalog.py`负责配置/发现/评测证据，`research.py`与`network.py`负责显式公开资料，`planner.py`将来源送入原预研流程；桌面设置支持自定义目录和评测。
+
+宿主通过`job_client.py → jobs.py → job_store.py / job_process.py → job_worker.py → Orchestrator`调用。SQLite先持久接纳再派发，Windows Job Object监督worker和检查后代，总预算包括打包/执行/review/验证。源工程只用于生成授权文件包，候选成果按内容hash返回；宿主接口不提供推广。`job_contract.py`定义严格参数及workspace授权校验。调用身份、模型调用计数和不确定取消的具体语义见V1；模型内部token与远端停止不作为已强制能力。
+
+下方保留v0.1～v0.3的实现背景；它们不是2026-09-14的全量环境实测。最新验证统一见[VALIDATION](VALIDATION.md)。
+
 ## 1. 原项目检查结论
 
 2026-09-09 检查当前目录：空目录，无源码、配置、VCS、AGENTS.md 或已有 Harness。可用环境：Python 3.12.7、Git、Codex CLI 0.153.4；没有 DeepSeek 可执行程序。后续用户提供临时 API Key，真实 `/models` 接口确认 `deepseek-v4-pro` 可用。

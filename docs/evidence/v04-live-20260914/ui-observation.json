@@ -1,0 +1,20 @@
+{
+  "kind": "manual_browser_accessibility_observation_not_automated_assertions",
+  "recorded_at": "2026-09-14T08:09:51.887271+00:00",
+  "state_directory": ".router-dev/ui-preview",
+  "model_credentials": "disabled_for_preview",
+  "observed": [
+    "settings custom provider/model/evaluation JSON visible",
+    "saved unchanged catalog and reopened values",
+    "public research unchecked by default; query and URL fields visible",
+    "synthetic requirement produced editable basic template with no analyzer credentials",
+    "proposal remained awaiting review; publish was not clicked",
+    "preview server exited after shutdown"
+  ],
+  "not_tested": [
+    "real model research",
+    "publish execution",
+    "Brave search",
+    "full visual layout or responsive screenshots"
+  ]
+}

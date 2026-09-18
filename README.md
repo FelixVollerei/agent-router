@@ -8,7 +8,7 @@
 
 ## 下载与启动
 
-当前版本为 **v0.3.0**，桌面工作台主要面向 Windows，要求 Python 3.11 或更新版本。源码运行没有第三方 Python 依赖。
+当前源码版本为 **v0.4.1**，对应[方案 v1 定版](docs/V1.md)。桌面工作台主要面向 Windows，要求 Python 3.11 或更新版本。新增宿主工程执行接口首版仅支持 Windows。源码运行没有第三方 Python 依赖；版本号不代表已经发布 Release。
 
 下载仓库源码或 Release 中的 ZIP，解压后在项目目录运行：
 
@@ -37,7 +37,7 @@ python -B scripts/install_desktop.py
 
 左侧保存会话与项目标签，并保留旧版运行记录。方案按版本保存，发布固定使用审阅版本、模型和 Prompt，重复发布同一版本不会重复运行；后续调整可生成新版本。关闭页面不会停止服务；「设置 → 退出本地服务」结束服务。再次双击图标会复用已运行的新版服务。
 
-预研实际使用需求、对话、附件与主动指定工程中的最多8份文件。当前没有实时网页搜索或执行插件连接，方案会标记来源与边界；插件栏目是用途建议，不会声称自动启用。未连接 DeepSeek 时提供明确标识的基础模板。无工程的任务会在独立目录生成交付物，不自动应用到其他目录。
+预研使用需求、对话、附件与主动指定工程中的最多8份文件。可展开「公开资料预研」，显式填写公开检索词或URL；Brave搜索读取 `BRAVE_SEARCH_API_KEY`，未配置时仍可读取指定公开页面。来源、采集时间与失败随方案保存，不自动把会话或工程变成搜索词。插件栏目仍是用途建议。未连接分析模型时提供明确标识的基础模板；无工程的任务在独立目录生成交付物。
 
 页面只监听随机的本机回环端口，使用会话令牌和同源校验；不会发布到互联网。密钥从不返回前端，不进入普通JSON配置；只有主动勾选时才写入 Windows DPAPI 加密文件。页面状态、加密密钥和执行记录在 `%LOCALAPPDATA%\EngineeringModelRouter`。图形界面与原CLI的状态目录分别管理。
 
@@ -59,6 +59,8 @@ python -B scripts/install_desktop.py
 - 隔离副本、原始状态哈希、每次尝试 checkpoint、diff、独立检查、只读 review。
 - SQLite 抽象经验；Codex app-server 实时额度查询，失败时回退手动配置。
 - 显式推广经过验证的候选修改；原始项目发生变化则拒绝覆盖。
+- 自定义模型/供应商目录、按需发现与经审阅评测的有限排序修正；配置、发现结果和实际可执行性分开。
+- `router.jobs/v1` 宿主接口：持久幂等、单执行槽、事件重放、总时限、执行器调用预算、取消与受控候选成果。Python宿主client和完整示例已提供。
 
 ## 快速开始
 
@@ -138,7 +140,27 @@ python -B -m model_router usage
 
 ## 后续方向
 
-下一版本拟研究用户自定义/自动发现模型、联网预研和基于权威评测的动态选型。当前尚未实现，具体想法见 [路线图](docs/ROADMAP.md)。
+本版实现了原计划的第一条可用路径，单工程真实模型与墨小汐PC往返已有证据，权威评测校准、复杂工程和完整多Agent能力继续分层验收。参见[路线图](docs/ROADMAP.md)与[测试结果](docs/VALIDATION.md)。
+
+## 接入墨小汐等宿主
+
+先编辑受信配置中的workspace及读写/检查/模型允许范围。请求只引用workspace ID，不接收远端任意路径或命令。借鉴DSH Standard的连接和领域分层，当前协议仍为Router自有协议，不宣称DSH兼容。
+
+```powershell
+# 只读：描述协议能力，不调用模型
+python -B -m examples.host_client
+# 只读模型发现与公开页面获取
+python -B -m model_router catalog --discover codex
+python -B -m model_router research --url https://example.com
+# 宿主通过私有stdin/stdout调用；配置示例仅授权演示工程
+python -B -m model_router --config examples/host-v1.toml serve --client-id moxiaoxi
+```
+
+`examples/host-v1-request.json` 是提交合同，`model_router/job_client.py` 提供同步Python client。`python -B -m examples.host_client --execute` 才执行真实演示，会使用模型账户资源。宿主结果始终 `applied=false`；未知执行在重启后隔离，不自动重派。本版没有原地恢复unknown的用户入口，需人工核对后由后续维护能力恢复，不能直接换状态目录当成可以重试。
+
+预算字段 `max_provider_calls` 计顶层执行器调用（包括review），不是执行器内部API请求数或累计token硬限。Codex包外读取隔离依赖其CLI/OS沙箱，文件打包本身不能证明它成立。墨小汐已实现独立工程profile、backend及PC任务入口；旧任务预算保持。接入与真实样本范围见[验证页](docs/VALIDATION.md)。
+
+更新源码后，已有后台服务需在无活动工作时退出并重新启动才能使用新代码；本次源码更新不自动重启用户服务。
 
 ## 接口依据
 

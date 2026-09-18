@@ -11,6 +11,16 @@ class Verifier:
 
     def verify(self, task, workspace, timeout=120):
         reports = []
+        # Do not execute checks from a candidate that already violates its scope.
+        # Host jobs protect their configured checker and helper files this way.
+        changed = workspace.diff()
+        illegal = [p for p in changed if not permitted(p, task.allowed_files, task.forbidden_files)]
+        artifacts = forbidden_artifacts(workspace.work)
+        if illegal or artifacts:
+            return Verification("failed", [
+                {"name": "scope_before_checks", "passed": not illegal, "unexpected_files": illegal},
+                {"name": "reserved_artifacts", "passed": not artifacts, "files": artifacts},
+            ], changed)
         for name in task.checks:
             argv = self.config.commands.get(name)
             if not argv:

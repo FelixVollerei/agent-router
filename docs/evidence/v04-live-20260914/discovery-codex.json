@@ -1,0 +1,8 @@
+{
+  "provider": "codex",
+  "observed_at": "2026-09-14T08:01:52.629846+00:00",
+  "models": [],
+  "status": "unavailable",
+  "source": "codex:model/list",
+  "error": "Codex app server exited"
+}
