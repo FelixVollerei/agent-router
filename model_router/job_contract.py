@@ -11,8 +11,30 @@ from .models import Task
 from .workspace import is_link, permitted, safe_path
 
 PROTOCOL = "router.jobs/v1"
+# The v2 wire contract is a separate protocol id, not a flag on v1: a connection speaks exactly
+# one closed schema, and which one is decided by the protocol it negotiated at `initialize`.
+PROTOCOL_V2 = "router.jobs/v2"
+# Newest first. This is the order a caller reads from `describe()` to decide what to ask for.
+PROTOCOLS = (PROTOCOL_V2, PROTOCOL)
 TERMINAL = {"verified", "needs_human", "blocked", "failed", "cancelled", "timed_out", "unknown"}
+# The v1 closed payload set. It is frozen: v1 requests must keep validating exactly as before.
 FIELDS = {"client_task_id", "idempotency_key", "session_id", "workspace_id", "task", "limits", "allowed_models", "upload_allowed"}
+# v2 adds the two facts the host needs to make approval and revision visible across the boundary.
+# They are evidence the host supplies and the peer records; neither carries authorization, and
+# the peer never interprets them as permission.
+WORK_REVISION_FIELD = "work_revision"
+APPROVAL_FIELD = "approval"
+APPROVAL_FIELDS = {"revision", "approval_id", "granted_at"}
+FIELDS_V2 = FIELDS | {WORK_REVISION_FIELD, APPROVAL_FIELD}
+SCHEMAS = {PROTOCOL: FIELDS, PROTOCOL_V2: FIELDS_V2}
+# Artifact-manifest row schema the peer emits. Both artifact reply branches carry it, including
+# the empty one, so a caller can classify the manifest before it reads a single row.
+MANIFEST_VERSION = 1
+SETTLEMENT_SCHEMA_VERSION = {PROTOCOL: 1, PROTOCOL_V2: 2}
+# What the peer can prove about a stop. `remote` is deliberately limited to "unknown": nothing in
+# this service observes the remote provider, so claiming more would be inventing authority.
+STOP_ACKNOWLEDGEMENTS = {"local": ("pending", "confirmed", "unconfirmed", "not_requested"),
+    "remote": ("unknown",)}
 
 
 def canonical(value):
@@ -25,9 +47,18 @@ def identity(value, label):
     return value
 
 
-def validate_submit(config, value):
-    if not isinstance(value, dict) or set(value) != FIELDS:
-        raise ValueError("submit_fields_must_match_v1")
+def validate_submit(config, value, *, protocol=PROTOCOL):
+    """Validate one `job.submit` payload against the schema of the negotiated protocol.
+
+    The key set stays *closed* in both versions: a v1 connection cannot smuggle a v2 key in, and
+    a v2 connection cannot fall back to the v1 shape. The default keeps every existing caller -
+    including direct unit callers - on the v1 contract it already had.
+    """
+    fields = SCHEMAS.get(protocol)
+    if fields is None:
+        raise ValueError("unsupported_protocol")
+    if not isinstance(value, dict) or set(value) != fields:
+        raise ValueError("submit_fields_must_match_v2" if protocol == PROTOCOL_V2 else "submit_fields_must_match_v1")
     value = copy.deepcopy(value)
     for name in ("client_task_id", "idempotency_key", "workspace_id"):
         identity(value[name], name)
@@ -91,9 +122,46 @@ def validate_submit(config, value):
         raise ValueError("budget_expanded")
     if task.profile.hours_left() <= 0:
         raise ValueError("deadline_expired")
+    if protocol == PROTOCOL_V2:
+        # Recorded facts, checked for shape only. `revision` binds the approval to the exact work
+        # package; the peer stores both and decides nothing about whether the approval is valid.
+        identity(value[WORK_REVISION_FIELD], WORK_REVISION_FIELD)
+        approval = value[APPROVAL_FIELD]
+        if not isinstance(approval, dict) or set(approval) != APPROVAL_FIELDS:
+            raise ValueError("invalid_approval")
+        if approval["revision"] != value[WORK_REVISION_FIELD]:
+            raise ValueError("approval_revision_mismatch")
+        identity(approval["approval_id"], "approval_id")
+        if not isinstance(approval["granted_at"], str) or not approval["granted_at"]:
+            raise ValueError("invalid_approval_granted_at")
     # Canonical request stays distinct from server-enforced derived restrictions.
     normalized = {**value, "task": asdict(Task.from_dict(value["task"])), "allowed_models": sorted(allowed)}
     return normalized, task, copy.deepcopy(settings)
+
+
+def request_hash(normalized, protocol=PROTOCOL):
+    """The durable idempotency digest for one normalized request.
+
+    v1 must stay byte-identical to the digest already stored for pre-upgrade jobs: otherwise a
+    legitimate retry of an existing job would be reported as `idempotency_conflict`. The v2 digest
+    prefixes the protocol and appends the work revision, so the two version spaces cannot collide,
+    a different revision on the same identity is a conflict rather than a silent replay, and
+    re-approval metadata (which legitimately changes) does not change the digest.
+    """
+    payload = {key: item for key, item in normalized.items() if key != APPROVAL_FIELD}
+    if protocol == PROTOCOL:
+        return hashlib.sha256(canonical(payload).encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{protocol}|{canonical(payload)}|{payload.get(WORK_REVISION_FIELD) or ''}".encode("utf-8")).hexdigest()
+
+
+def stop_acknowledgement(state, result, *, requested=False):
+    """What this peer can prove about a stop, in a shape a caller classifies instead of guessing."""
+    result = result or {}
+    if state in TERMINAL:
+        local = "confirmed" if result.get("local_stopped") is True else "unconfirmed"
+    else:
+        local = "pending" if requested else "not_requested"
+    return {"local": local, "remote": "unknown"}
 
 
 def fingerprint(value):
