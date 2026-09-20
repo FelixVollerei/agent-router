@@ -60,7 +60,7 @@ python -B scripts/install_desktop.py
 - SQLite 抽象经验；Codex app-server 实时额度查询，失败时回退手动配置。
 - 显式推广经过验证的候选修改；原始项目发生变化则拒绝覆盖。
 - 自定义模型/供应商目录、按需发现与经审阅评测的有限排序修正；配置、发现结果和实际可执行性分开。
-- `router.jobs/v1` 宿主接口：持久幂等、单执行槽、事件重放、总时限、执行器调用预算、取消与受控候选成果。Python宿主client和完整示例已提供。
+- `router.jobs/v1` 与 `router.jobs/v2` 宿主接口：持久幂等、单执行槽、事件重放、总时限、执行器调用预算、取消与受控候选成果。v1 保持逐项不变；v2 增加闭合 10 键提交（`work_revision`/`approval` 仅作记录）、制品清单版本、以及"本地已确认停止 / 远端显式未知"的 `stop_acknowledgement`。版本策略见 [docs/PROTOCOL-VERSIONING.md](docs/PROTOCOL-VERSIONING.md)。Python宿主client和完整示例已提供。
 
 ## 快速开始
 
