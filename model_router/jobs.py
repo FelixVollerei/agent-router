@@ -10,8 +10,11 @@ import sys
 import threading
 import time
 
+from . import __version__
 from .catalog import configured_catalog
-from .job_contract import PROTOCOL, TERMINAL, canonical, fingerprint, identity, validate_submit
+from .job_contract import (APPROVAL_FIELD, MANIFEST_VERSION, PROTOCOL, PROTOCOL_V2, PROTOCOLS,
+    SETTLEMENT_SCHEMA_VERSION, TERMINAL, WORK_REVISION_FIELD, canonical, fingerprint, identity,
+    request_hash, stop_acknowledgement, validate_submit)
 from .job_process import ProcessContainment, ServiceLock
 from .job_store import JobStore
 from .process import LineProcess
@@ -34,26 +37,28 @@ class JobService:
         # Injectable only in Python tests, never selected from RPC or model input.
         self.worker_command = worker_command or [sys.executable, "-B", "-X", "utf8", "-m", "model_router.job_worker"]
 
-    def describe(self):
-        return {"protocol": PROTOCOL, "server_version": "0.4.1", "execution_available": os.name == "nt",
+    def describe(self, protocol=PROTOCOL):
+        return {"protocol": protocol, "protocol_versions": list(PROTOCOLS),
+            "server_version": __version__, "execution_available": os.name == "nt",
             "methods": ["catalog.list", "job.submit", "job.lookup", "job.get", "job.events", "job.cancel", "job.artifacts"],
             "features": {"durable_idempotency": True, "event_replay": True, "single_slot": True, "resume_execution": False,
                 "steering": False, "promotion": False, "dsh_standard_conformance": False, "autonomous": False,
-                "lookup_by_parent": True},
+                "lookup_by_parent": True, "stop_acknowledgement": True, "protocol_upgrade": True},
             "budgets": {"max_runtime": "local_process_supervision", "max_attempts": "enforced",
                 "max_provider_calls": "provider_invocations_including_review", "tokens": "observation_only", "api_cost": "unknown"},
-            "cancellation": {"local": "windows_job_object", "remote_provider": "unknown"},
+            "cancellation": {"local": "windows_job_object", "remote_provider": "not_observable_in_v2"},
             "scope": {"input_packaging": "explicit_files_only", "managed_tools": "package_only",
                 "codex_read_isolation": "depends_on_cli_os_sandbox_not_proven_by_packaging",
                 "codex_write_scope": "sandbox_plus_post_verification", "trusted_checks": True},
-            "limits": {"frame_bytes": 200000, "events_per_page": 100, "jobs": 4096, "events_per_job": 4096}}
+            "limits": {"frame_bytes": 200000, "events_per_page": 100, "jobs": 4096, "events_per_job": 4096},
+            "manifest_version": MANIFEST_VERSION}
 
-    def submit(self, request):
+    def submit(self, request, *, protocol=PROTOCOL):
         with self.lock:
             if self.closed:
                 raise ValueError("connection_closed")
-            normalized, task, settings = validate_submit(self.config, request)
-            digest = fingerprint(normalized)
+            normalized, task, settings = validate_submit(self.config, request, protocol=protocol)
+            digest = request_hash(normalized, protocol)
             # Return a duplicate before consulting the transient slot; terminal state may
             # have committed just before the supervisor releases its process ownership.
             with self.store.lock:
@@ -65,7 +70,8 @@ class JobService:
                 return {**self.get(previous[0]["id"]), "duplicate": True}
             if self.active is not None:
                 raise ValueError("busy_or_quarantined_unknown")
-            identifier, duplicate = self.store.admit(self.client, normalized, digest)
+            identifier, duplicate = self.store.admit(self.client, normalized, digest, protocol=protocol,
+                work_revision=normalized.get(WORK_REVISION_FIELD), approval=normalized.get(APPROVAL_FIELD))
             if duplicate:
                 return {**self.get(identifier), "duplicate": True}
             self.active = identifier
@@ -136,9 +142,12 @@ class JobService:
             except (OSError, ValueError, TimeoutError):
                 final, reason = "unknown", "local_cleanup_unconfirmed"
             result = {**(worker_result or {}), "reason": reason, "local_stopped": stopped,
-                "remote_stopped": None, "applied": False, "runtime": time.monotonic() - start}
+                "remote_stopped": None, "applied": False, "runtime": time.monotonic() - start,
+                "stop_acknowledgement": stop_acknowledgement(final, {"local_stopped": stopped})}
             result.pop("state", None)
-            self.store.update(identifier, final, result, run_id)
+            job_protocol = self.store.get(self.client, identifier)["protocol"]
+            self.store.update(identifier, final, result, run_id,
+                settlement_schema_version=SETTLEMENT_SCHEMA_VERSION.get(job_protocol, 1))
             with self.lock:
                 self.active = None
 
@@ -158,17 +167,26 @@ class JobService:
     def cancel(self, identifier):
         with self.lock:
             row = self.get(identifier)
-            if row["state"] not in TERMINAL:
+            requested = row["state"] not in TERMINAL
+            if requested:
                 if identifier != self.active or self.cancel_event is None:
                     raise ValueError("active_worker_not_owned")
                 self.store.update(identifier, "cancel_requested")
                 self.cancel_event.set()
-            return {**self.get(identifier), "cancel_requested": row["state"] not in TERMINAL}
+            settled = self.get(identifier)
+            # The acknowledgement states what this peer can prove right now: a request that is
+            # pending, an already-settled job, or a stop that was actually confirmed. The remote
+            # half is always "unknown" because nothing here observes the provider.
+            return {**settled, "cancel_requested": requested,
+                "stop_acknowledgement": stop_acknowledgement(settled["state"], settled["result"],
+                    requested=requested)}
 
     def artifacts(self, identifier):
         row = self.get(identifier)
         if row["state"] not in TERMINAL or not row["run_id"]:
-            return {"artifacts": [], "applied": False}
+            # The empty branch carries the manifest version too: a caller classifies the manifest
+            # before it reads a row, so "no artifacts" must not look like "no declaration".
+            return {"artifacts": [], "applied": False, "manifest_version": MANIFEST_VERSION}
         root = self.state / "execution" / "runs" / row["run_id"]
         result = []
         candidates = [p.name for p in root.iterdir() if p.is_file() and (p.name in {"changes.diff", "result.json", "verified-hashes.json"} or re.fullmatch(r"verification-\d+\.json", p.name))]
@@ -187,7 +205,11 @@ class JobService:
                 raise ValueError("artifact_size_limit")
             result.append({"ref": f"router:{identifier}:{relative}", "relative_path": relative,
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "bytes": size})
-        return {"artifacts": result, "run_root": str(root), "verified_candidate": row["state"] == "verified", "applied": False}
+        return {"artifacts": result, "run_root": str(root), "verified_candidate": row["state"] == "verified",
+            "applied": False,
+            # The row schema this manifest was built under, so a stored manifest stays readable
+            # after the peer moves on to another version.
+            "manifest_version": MANIFEST_VERSION}
 
     def close(self):
         with self.lock:
@@ -206,7 +228,7 @@ class JobService:
 def serve(config, client_id, stdin=None, stdout=None):
     stdin = stdin or sys.stdin.buffer
     stdout = stdout or sys.stdout
-    service, initialized = JobService(config, client_id), False
+    service, initialized, protocol = JobService(config, client_id), False, None
     params_by_method = {"catalog.list": set(), "job.submit": None, "job.lookup": {"client_task_id"}, "job.get": {"job_id"},
         "job.cancel": {"job_id"}, "job.artifacts": {"job_id"}, "job.events": {"job_id", "after", "limit"}}
     def reject_constants(value):
@@ -238,9 +260,13 @@ def serve(config, client_id, stdin=None, stdout=None):
                 if not isinstance(params, dict):
                     raise ValueError("object_params_required")
                 if method == "initialize":
-                    if set(params) != {"protocol"} or params["protocol"] != PROTOCOL:
+                    # Every version this peer implements is accepted, and a second initialize is
+                    # the documented upgrade step rather than an error: a caller confirms the
+                    # legacy version first, reads `protocol_versions`, then asks for the newer one.
+                    if set(params) != {"protocol"} or params["protocol"] not in PROTOCOLS:
                         raise ValueError("incompatible_protocol")
-                    initialized, result = True, service.describe()
+                    initialized, protocol = True, params["protocol"]
+                    result = service.describe(protocol)
                 elif not initialized:
                     raise ValueError("initialize_required")
                 elif method not in params_by_method:
@@ -252,7 +278,7 @@ def serve(config, client_id, stdin=None, stdout=None):
                     if method == "catalog.list":
                         result = configured_catalog(config)
                     elif method == "job.submit":
-                        result = service.submit(params)
+                        result = service.submit(params, protocol=protocol)
                     elif method == "job.lookup":
                         result = service.lookup(params["client_task_id"])
                     elif method == "job.events":
