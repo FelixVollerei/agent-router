@@ -154,6 +154,17 @@ def request_hash(normalized, protocol=PROTOCOL):
     return hashlib.sha256(f"{protocol}|{canonical(payload)}|{payload.get(WORK_REVISION_FIELD) or ''}".encode("utf-8")).hexdigest()
 
 
+def payload_digest(normalized, protocol=PROTOCOL):
+    """The integrity binding for the whole payload of one version.
+
+    This is deliberately *not* the idempotency digest: `request_hash` must keep answering only
+    "same request?", which is why it ignores approval metadata. This digest covers the canonical
+    payload including that metadata, so no v2 evidence sits outside an integrity binding, and it is
+    recorded beside the idempotency hash rather than replacing it.
+    """
+    return hashlib.sha256(f"{protocol}|payload|{canonical(normalized)}".encode("utf-8")).hexdigest()
+
+
 def stop_acknowledgement(state, result, *, requested=False):
     """What this peer can prove about a stop, in a shape a caller classifies instead of guessing."""
     result = result or {}

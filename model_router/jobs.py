@@ -14,7 +14,7 @@ from . import __version__
 from .catalog import configured_catalog
 from .job_contract import (APPROVAL_FIELD, MANIFEST_VERSION, PROTOCOL, PROTOCOL_V2, PROTOCOLS,
     SETTLEMENT_SCHEMA_VERSION, TERMINAL, WORK_REVISION_FIELD, canonical, fingerprint, identity,
-    request_hash, stop_acknowledgement, validate_submit)
+    payload_digest, request_hash, stop_acknowledgement, validate_submit)
 from .job_process import ProcessContainment, ServiceLock
 from .job_store import JobStore
 from .process import LineProcess
@@ -70,8 +70,13 @@ class JobService:
                 return {**self.get(previous[0]["id"]), "duplicate": True}
             if self.active is not None:
                 raise ValueError("busy_or_quarantined_unknown")
+            # v2 carries facts the idempotency digest deliberately ignores, so it also records an
+            # independent binding over the whole payload. v1 has no such evidence and keeps its
+            # single digest, which is what makes an old retry stay byte-identical.
+            binding = payload_digest(normalized, protocol) if protocol != PROTOCOL else None
             identifier, duplicate = self.store.admit(self.client, normalized, digest, protocol=protocol,
-                work_revision=normalized.get(WORK_REVISION_FIELD), approval=normalized.get(APPROVAL_FIELD))
+                work_revision=normalized.get(WORK_REVISION_FIELD), approval=normalized.get(APPROVAL_FIELD),
+                payload_digest=binding)
             if duplicate:
                 return {**self.get(identifier), "duplicate": True}
             self.active = identifier
@@ -154,8 +159,13 @@ class JobService:
     def get(self, identifier):
         row = self.store.get(self.client, identifier)
         req = row["request"]
-        return {"job_id": row["id"], "client_task_id": row["task_id"], "session_id": req["session_id"],
+        value = {"job_id": row["id"], "client_task_id": row["task_id"], "session_id": req["session_id"],
             "state": row["state"], "run_id": row["run_id"], "result": row["result"], "applied": False}
+        # Only a v2 job has evidence that needs its own binding, so only a v2 reply carries it and
+        # a v1 reply keeps exactly the keys it had.
+        if row.get("payload_digest"):
+            value["payload_digest"] = row["payload_digest"]
+        return value
 
     def lookup(self, client_task_id):
         identity(client_task_id,"client_task_id")

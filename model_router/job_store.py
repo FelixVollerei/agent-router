@@ -15,7 +15,7 @@ class JobStore:
     #: or the peer settles with, so an older peer reading the same database simply ignores them.
     #: No existing column, UNIQUE constraint or dedup predicate moves.
     ADDED_COLUMNS = {"protocol": "TEXT NOT NULL DEFAULT 'router.jobs/v1'", "work_revision": "TEXT",
-        "approval": "TEXT", "settlement_schema_version": "INTEGER"}
+        "approval": "TEXT", "settlement_schema_version": "INTEGER", "payload_digest": "TEXT"}
 
     def __init__(self, path):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -51,7 +51,8 @@ class JobStore:
         item = {"sequence": seq, "kind": kind, "data": data, "time": time.time()}
         self.db.execute("INSERT INTO events VALUES(?,?,?)", (job_id, seq, canonical(item)))
 
-    def admit(self, client, request, request_hash, *, protocol=PROTOCOL, work_revision=None, approval=None):
+    def admit(self, client, request, request_hash, *, protocol=PROTOCOL, work_revision=None,
+            approval=None, payload_digest=None):
         with self.lock, self.db:
             self.db.execute("BEGIN IMMEDIATE")
             rows = self.db.execute("SELECT * FROM jobs WHERE client=? AND (task_id=? OR idem=?)",
@@ -66,11 +67,11 @@ class JobStore:
                 raise ValueError("job_capacity_exhausted")
             identifier, now = uuid.uuid4().hex, time.time()
             self.db.execute("INSERT INTO jobs(id,client,task_id,idem,request_hash,request,state,created,"
-                "updated,result,run_id,protocol,work_revision,approval,settlement_schema_version) "
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+                "updated,result,run_id,protocol,work_revision,approval,settlement_schema_version,"
+                "payload_digest) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
                 identifier, client, request["client_task_id"], request["idempotency_key"], request_hash,
                 canonical(request), "accepted", now, now, None, None, protocol, work_revision,
-                canonical(approval) if approval is not None else None, None))
+                canonical(approval) if approval is not None else None, None, payload_digest))
             self._event(identifier, "accepted", {})
             return identifier, False
 

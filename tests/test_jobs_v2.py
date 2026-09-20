@@ -230,6 +230,41 @@ class ProtocolV2Tests(unittest.TestCase):
         self.assertIn('run_root', final)
         self.assertTrue(all(set(row) == {'ref', 'relative_path', 'sha256', 'bytes'} for row in final['artifacts']))
 
+    def test_v2_records_an_integrity_binding_that_covers_the_approval_metadata(self):
+        """Q2: the approval object is outside the idempotency digest, so it needs its own binding."""
+        service = self.start()
+        first = service.submit(self.v2_request, protocol=PROTOCOL_V2)
+        self.assertIn('payload_digest', first)
+        reapproved = service.submit({**self.v2_request, APPROVAL_FIELD: {'revision': 'rev-7',
+            'approval_id': 'approval-2', 'granted_at': 'later'}}, protocol=PROTOCOL_V2)
+        self.assertTrue(reapproved['duplicate'], 'a re-approval of the same revision is still a retry')
+        self.assertEqual(reapproved['job_id'], first['job_id'])
+        self.assertEqual(reapproved['payload_digest'], first['payload_digest'],
+            'the binding belongs to the stored payload, so a replay reports the stored value')
+        row = service.store.db.execute('SELECT payload_digest, request_hash FROM jobs WHERE id=?',
+            (first['job_id'],)).fetchone()
+        self.assertEqual(row['payload_digest'], first['payload_digest'])
+        # The binding is a different fact from the idempotency digest and is not a replacement.
+        self.assertNotEqual(row['payload_digest'], row['request_hash'])
+        from model_router.job_contract import payload_digest as compute
+        normalized, _, _ = validate_submit(self.cfg, self.v2_request, protocol=PROTOCOL_V2)
+        self.assertEqual(compute(normalized, PROTOCOL_V2), first['payload_digest'])
+        changed, _, _ = validate_submit(self.cfg, {**self.v2_request, APPROVAL_FIELD: {'revision': 'rev-7',
+            'approval_id': 'approval-9', 'granted_at': 'later'}}, protocol=PROTOCOL_V2)
+        self.assertNotEqual(compute(changed, PROTOCOL_V2), first['payload_digest'],
+            'different approval metadata must produce a different payload binding')
+
+    def test_a_v1_job_keeps_its_reply_shape_and_has_no_second_binding(self):
+        """Legacy safety: v1 has no evidence to bind, so its reply and digest are unchanged."""
+        service = self.start()
+        submitted = service.submit(self.request, protocol=PROTOCOL)
+        self.assertNotIn('payload_digest', submitted)
+        row = service.store.db.execute('SELECT payload_digest, request_hash FROM jobs WHERE id=?',
+            (submitted['job_id'],)).fetchone()
+        self.assertIsNone(row['payload_digest'])
+        normalized, _, _ = validate_submit(self.cfg, self.request)
+        self.assertEqual(row['request_hash'], fingerprint(normalized))
+
     def test_an_old_database_is_migrated_in_place_without_touching_existing_rows(self):
         """Append-only migration: the v0.4.1 schema keeps working and gains the new columns."""
         path = self.cfg.state_dir / 'jobs.sqlite3'
