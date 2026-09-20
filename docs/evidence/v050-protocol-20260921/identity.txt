@@ -1,0 +1,4 @@
+peer commit: 6c869681b4e6386985175f994257f721d62ddce2
+protocol: router.jobs/v2 (+ router.jobs/v1 retained)
+implementation release: 0.5.0
+v0.4.1 comparison checkout: 77d6736 (read-only clone, temp)
