@@ -8,7 +8,7 @@
 
 ## 下载与启动
 
-当前源码版本为 **v0.4.1**，对应[方案 v1 定版](docs/V1.md)。桌面工作台主要面向 Windows，要求 Python 3.11 或更新版本。新增宿主工程执行接口首版仅支持 Windows。源码运行没有第三方 Python 依赖；版本号不代表已经发布 Release。
+当前源码版本为 **v0.5.0**（`model_router.__version__`，同一事实也经 `describe()["server_version"]` 公布）。线协议同时支持 `router.jobs/v1` 与 `router.jobs/v2`：v2 是新增的**闭合 10 键**提交与制品清单版本，v1 逐项不变。版本策略见 [docs/PROTOCOL-VERSIONING.md](docs/PROTOCOL-VERSIONING.md)。桌面工作台主要面向 Windows，要求 Python 3.11 或更新版本。新增宿主工程执行接口首版仅支持 Windows。源码运行没有第三方 Python 依赖；版本号不代表已经发布 Release。
 
 下载仓库源码或 Release 中的 ZIP，解压后在项目目录运行：
 
