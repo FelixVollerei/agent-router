@@ -12,13 +12,49 @@ import time
 
 from . import __version__
 from .catalog import configured_catalog
-from .job_contract import (APPROVAL_FIELD, MANIFEST_VERSION, PROTOCOL, PROTOCOL_V2, PROTOCOLS,
+from .job_contract import (APPROVAL_FIELD, DIAGNOSTIC_ARTIFACTS, MANIFEST_VERSION, PROTOCOL, PROTOCOL_V2, PROTOCOLS,
     SETTLEMENT_SCHEMA_VERSION, TERMINAL, WORK_REVISION_FIELD, canonical, fingerprint, identity,
     payload_digest, request_hash, stop_acknowledgement, validate_submit)
 from .job_process import ProcessContainment, ServiceLock
 from .job_store import JobStore
 from .process import LineProcess
 from .workspace import inventory, safe_path
+
+
+def baseline_hashes(root):
+    """The digest of every protected input as it was before the worker ran, keyed `work/<path>`.
+
+    A caller could previously prove that a packaged protected input still matched the peer's original
+    copy only by reading `<run_root>/baseline/<path>` itself, which meant reconstructing a private
+    directory name. It can now compare this declaration with the digest of the artifact it was
+    handed, so no peer-side byte layout is involved.
+
+    The `baseline/` tree is the snapshot taken in `Workspace.prepare()` before the worker starts, so
+    it is the pre-execution state by construction. What this declaration can and cannot prove is
+    stated plainly for the caller: it lets the caller check that the peer's own two declarations
+    agree, and it does not attest anything the peer never observed. The keys are `work/`-prefixed
+    because that is how the same file appears in the artifact manifest.
+
+    An unreadable or over-limit baseline entry is omitted rather than guessed: a missing declaration
+    makes the caller refuse that input, which is safer than a digest the peer is unsure about.
+    """
+    base = root / "baseline"
+    if not base.is_dir():
+        return {}
+    declared = {}
+    for path in sorted(base.rglob("*")):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(base).as_posix()
+        try:
+            if path.is_symlink() or path.stat().st_size > 32 * 1024 * 1024:
+                continue
+            declared["work/" + relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError:
+            continue
+        if len(declared) >= 2048:
+            break
+    return declared
 
 
 class JobService:
@@ -196,10 +232,20 @@ class JobService:
         if row["state"] not in TERMINAL or not row["run_id"]:
             # The empty branch carries the manifest version too: a caller classifies the manifest
             # before it reads a row, so "no artifacts" must not look like "no declaration".
-            return {"artifacts": [], "applied": False, "manifest_version": MANIFEST_VERSION}
+            return {"artifacts": [], "applied": False, "manifest_version": MANIFEST_VERSION,
+                "baseline_hashes": {}}
         root = self.state / "execution" / "runs" / row["run_id"]
         result = []
         candidates = [p.name for p in root.iterdir() if p.is_file() and (p.name in {"changes.diff", "result.json", "verified-hashes.json"} or re.fullmatch(r"verification-\d+\.json", p.name))]
+        # Diagnostic artifacts are DECLARED, never left for the caller to find by convention. The
+        # caller used to probe these three fixed names inside the run directory, which made a private
+        # layout choice into a de facto contract; naming them here is what retires that probe. A name
+        # that this run never produced is simply absent, because a declared-but-missing row would be
+        # a lie rather than a declaration.
+        for name in (DIAGNOSTIC_ARTIFACTS):
+            path = root / name
+            if path.is_file() and path.stat().st_size <= 4 * 1024 * 1024:
+                candidates.append(name)
         work = root / "work"
         actual = inventory(work)
         expected = json.loads((root / "verified-hashes.json").read_text(encoding="utf-8")) if row["state"] == "verified" else None
@@ -217,6 +263,7 @@ class JobService:
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "bytes": size})
         return {"artifacts": result, "run_root": str(root), "verified_candidate": row["state"] == "verified",
             "applied": False,
+            "baseline_hashes": baseline_hashes(root),
             # The row schema this manifest was built under, so a stored manifest stays readable
             # after the peer moves on to another version.
             "manifest_version": MANIFEST_VERSION}

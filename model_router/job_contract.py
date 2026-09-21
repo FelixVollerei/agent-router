@@ -30,6 +30,10 @@ SCHEMAS = {PROTOCOL: FIELDS, PROTOCOL_V2: FIELDS_V2}
 # Artifact-manifest row schema the peer emits. Both artifact reply branches carry it, including
 # the empty one, so a caller can classify the manifest before it reads a single row.
 MANIFEST_VERSION = 1
+# Diagnostic artifacts the peer declares in its own artifact manifest when this run produced them.
+# They are named here so the declaration is data rather than a convention the caller has to guess:
+# before this, a caller found them by probing these three file names inside the run directory.
+DIAGNOSTIC_ARTIFACTS = ("events.jsonl", "task.json", "ESCALATION.md")
 SETTLEMENT_SCHEMA_VERSION = {PROTOCOL: 1, PROTOCOL_V2: 2}
 # What the peer can prove about a stop. `remote` is deliberately limited to "unknown": nothing in
 # this service observes the remote provider, so claiming more would be inventing authority.
